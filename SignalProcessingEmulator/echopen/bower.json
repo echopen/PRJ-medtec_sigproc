@@ -1,0 +1,12 @@
+{
+  "name": "echopen",
+  "version": "O.O.1",
+  "dependencies": {
+    "angular-route": "^1.5.0",
+    "bootstrap": "^3.3.6",
+    "jquery": "^2.2.0",
+    "angular": "^1.5.0",
+    "angular-md5": "^0.1.10",
+    "angular-cookies": "^1.5.0"
+  }
+}

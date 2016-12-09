@@ -1,0 +1,5 @@
+std1 is 0.0000000000 
+std2 is 0.0000000000 
+Peak signal to noise ratio is 39.7802631808 
+Mean square error between the images is 6.83996757252 
+Normalised root mean squre error between the images is 0.202078127186 

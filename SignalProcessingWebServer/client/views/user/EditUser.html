@@ -1,0 +1,47 @@
+<h1>Profile of {{main.user2.first_name}} {{main.user2.last_name}}</h1>
+
+<div ng-switch on="editformat.status">
+    <div ng-switch-when="ok">
+        <div class="alert alert-success" role="alert" n-controller="usr">Successful update</div>
+    </div>
+    <div ng-switch-when="ko">
+        <div class="alert alert-danger" role="alert" n-controller="usr">Your first name and last name must be in the alphabetical size. Your email must have a correct format</div>
+    </div>
+    <div ng-switch-default>
+    </div>
+</div>
+<div class="form">
+<form ng-submit="usr.editUser(main.user2._id)" >
+    <div class="form-group">
+        <label for="first_name">First_name</label>
+        <input type="text" class="form-control" id="first_name" pattern="[a-zA-Z]+" placeholder={{main.user2.first_name}} ng-model="usr.us.first_name">
+    </div>
+
+    <div class="form-group">
+        <label for="last_name">Last_name</label>
+        <input type="text" class="form-control" id="last_name" pattern="[a-zA-Z]+" placeholder={{main.user2.last_name}} ng-model="usr.us.last_name">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" placeholder={{main.user2.email}} ng-model="usr.us.email">
+    </div>
+
+    <div class="form-group">
+        <label for="password">New password</label>
+        <input type="password" class="form-control" id="password"  ng-model="usr.us.password">
+    </div>
+
+    <div class="form-group">
+        <label for="confirm_Password">Confirm new password</label>
+        <input type="password" class="form-control" id="confirm_Password" ng-model="usr.us.confirm_password">
+    </div>
+
+    <button type="submit" class="btn btn-default right">Validate</button>
+
+</form></br></br>
+
+<h3>Do you want to leave us ?</h3>
+
+<button ng-click = "usr.removeUser(main.user2._id)" class="btn btn-danger">Delete my account</button>
+</div>

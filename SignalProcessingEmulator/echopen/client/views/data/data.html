@@ -1,0 +1,16 @@
+<h1>Data of {{main.user.first_name}} {{main.user.last_name}}</h1>
+
+<table class="table table-bordered" ng-controller="DataController as data">
+    <tr>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+    <tr ng-repeat="datum in data.datas">
+        <td>{{datum.created}}</td>
+        <td>
+            <form ng-submit="data.sendImages(datum)" >
+                <button type="submit" class="btn btn-info">Download</button>
+            </form>
+        </td>
+    </tr>
+</table>

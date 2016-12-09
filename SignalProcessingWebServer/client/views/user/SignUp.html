@@ -1,0 +1,67 @@
+<h1>Subscription</h1>
+
+<div ng-switch on="SignUpEmpty.status">
+    <div ng-switch-when="ok">
+        <div ng-switch on="SignUpPassword.status">
+            <div ng-switch-when="ok">
+                <div ng-switch on="EmailExist.status">
+                    <div ng-switch-when="ok">
+                        <div ng-switch on="SignUpformat.status">
+                            <div ng-switch-when="ok">
+                                <div class="alert alert-success" role="alert" n-controller="usr">Subscription success</div>
+                            </div>
+                            <div ng-switch-when="ko">
+                                <div class="alert alert-danger" role="alert" n-controller="usr">Your first name or last name must be in the alphabetical format and your email must have a correct format</div>
+                            </div>
+                            <div ng-switch-default>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-switch-when="ko">
+                        <div class="alert alert-danger" role="alert" n-controller="usr">This email already exists in our database</div>
+                    </div>
+                    <div ng-switch-default>
+                    </div>
+                </div>
+            </div>
+            <div ng-switch-when="ko">
+                <div class="alert alert-danger" role="alert" n-controller="usr">Your password and confirm_password don't match !</div>
+            </div>
+            <div ng-switch-default>
+            </div>
+        </div>
+    </div>
+    <div ng-switch-when="ko">
+        <div class="alert alert-danger" role="alert" n-controller="usr">Any fields must be full !</div>
+    </div>
+    <div ng-switch-default>
+    </div>
+</div>
+<form ng-submit="usr.sendUser()" class="form">
+    <div class="form-group">
+        <label for="first_name">First_name</label>
+        <input type="text" class="form-control" id="first_name" pattern="[a-zA-Z]+" required placeholder="First name" ng-model="usr.newuser.first_name">
+    </div>
+
+    <div class="form-group">
+        <label for="last_name">Last_name</label>
+        <input type="text" class="form-control" id="last_name" pattern="[a-zA-Z]+" required placeholder="Last name" ng-model="usr.newuser.last_name">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required placeholder="Email" ng-model="usr.newuser.email">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" required placeholder="Password" ng-model="usr.newuser.password">
+    </div>
+
+    <div class="form-group">
+        <label for="confirm_Password">Confirm_Password</label>
+        <input type="password" class="form-control" id="confirm_Password" required placeholder="Password" ng-model="usr.newuser.confirm_password">
+    </div>
+
+    <button type="submit" class="btn btn-default right">Sign Up</button>
+</form>

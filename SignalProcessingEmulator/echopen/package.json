@@ -1,0 +1,12 @@
+{
+  "name": "echopen",
+  "version": "0.0.1",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "mongoose": "^4.4.3",
+    "password-hash": "^1.2.2"
+  }
+}

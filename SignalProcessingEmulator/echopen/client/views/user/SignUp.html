@@ -1,0 +1,49 @@
+<h1>Subscription</h1>
+
+<div ng-switch on="SignUpEmpty.status">
+    <div ng-switch-when="ok">
+        <div ng-switch on="SignUpPassword.status">
+            <div ng-switch-when="ok">
+                <div class="alert alert-success" role="alert" n-controller="usr">Subscription success </div>
+            </div>
+            <div ng-switch-when="ko">
+                <div class="alert alert-danger" role="alert" n-controller="usr">Your password and confirm_password don't match !</div>
+            </div>
+            <div ng-switch-default>
+            </div>
+        </div>
+    </div>
+    <div ng-switch-when="ko">
+        <div class="alert alert-danger" role="alert" n-controller="usr">Any fields must be full !</div>
+    </div>
+    <div ng-switch-default>
+    </div>
+</div>
+<form ng-submit="usr.sendUser()">
+    <div class="form-group">
+        <label for="first_name">First_name</label>
+        <input type="text" class="form-control" id="first_name" placeholder="First name" ng-model="usr.newuser.first_name">
+    </div>
+
+    <div class="form-group">
+        <label for="last_name">Last_name</label>
+        <input type="text" class="form-control" id="last_name" placeholder="Last name" ng-model="usr.newuser.last_name">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" placeholder="Email" ng-model="usr.newuser.email">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="usr.newuser.password">
+    </div>
+
+    <div class="form-group">
+        <label for="confirm_Password">Confirm_Password</label>
+        <input type="password" class="form-control" id="confirm_Password" placeholder="Password" ng-model="usr.newuser.confirm_password">
+    </div>
+
+    <button type="submit" class="btn btn-default">Sign Up</button>
+</form>

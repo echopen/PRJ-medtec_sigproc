@@ -1,0 +1,40 @@
+body {
+    background-attachment:fixed;
+    background-image:url(../images/fond2.jpg);
+}
+
+@media (max-width: 400px)
+{
+    .resize{}
+}
+.resize{
+    display:block;
+    width: 40%;
+    float: left;
+    overflow: hidden;
+}
+
+.right{
+    float: right;
+}
+
+.footer{
+    margin-top: 40px;
+    padding-top : 1%;
+    padding-left : 1%;
+    padding-right : 1%;
+    alignment:center ;
+    background-color: whitesmoke;
+    position: fixed;
+    bottom: 0%;
+    overflow: hidden;
+    font-size: 10px
+}
+
+.btn-rnd{
+    border-radius: 40px;
+}
+
+.collapse{
+
+}

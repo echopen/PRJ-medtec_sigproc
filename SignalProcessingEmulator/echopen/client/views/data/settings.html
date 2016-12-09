@@ -1,0 +1,85 @@
+<h1>Configuration</h1>
+<form ng-submit="data.sendSettings()">
+    <div class="form-group">
+        <label for="nbr_img">Number of images</label>
+        <button class="btn btn-info btn-xs btn-rnd" type="button" data-toggle="collapse" data-target="#numberofimage" aria-expanded="false" aria-controls="numberofimage">
+            Info
+        </button>
+        <div class="collapse" id="numberofimage">
+            <div class="well">
+                <p>Number of images to acquire</p>
+            </div>
+        </div>
+        <input type="number" class="form-control" id="nbr_img"  ng-model="data.settings.nbr_img" min="1" required>
+    </div>
+
+    <div class="form-group">
+        <label for="length_ramp">Length of the ramp</label>
+        <button class="btn btn-info btn-xs btn-rnd" type="button" data-toggle="collapse" data-target="#lengthramp" aria-expanded="false" aria-controls="lengthramp">
+            Info
+        </button>
+        <div class="collapse" id="lengthramp">
+            <div class="well">
+                <p>% of the Period you want to see appearing on the acquired images</p>
+            </div>
+        </div>
+        <input type="number" class="form-control" id="length_ramp" placeholder="Between 0 and 100" ng-model="data.settings.length_ramp" min="0" max="100" step="1">
+    </div>
+
+    <div class="form-group">
+        <label for="position_ramp">Position of the ramp</label>
+        <button class="btn btn-info btn-xs btn-rnd" type="button" data-toggle="collapse" data-target="#positionramp" aria-expanded="false" aria-controls="positionramp">
+            Info
+        </button>
+        <div class="collapse" id="positionramp">
+            <div class="well">
+                <p>Position of the Ramp on the acquired signal (Used only if length of the ramp was set to anything else than 100%). It will define what part of the image you want to see (The first echoes or the last ones)</p>
+            </div>
+        </div>
+        <input type="number" class="form-control" id="position_ramp" placeholder="Between 0 and 100" ng-model="data.settings.position_ramp" min="0" max="100" step="1">
+    </div>
+
+    <div class="form-group">
+        <label for="nbrPix">Number of pixels</label>
+        <button class="btn btn-info btn-xs btn-rnd" type="button" data-toggle="collapse" data-target="#nbr_Pix" aria-expanded="false" aria-controls="nbr_Pix">
+            Info
+        </button>
+        <div class="collapse" id="nbr_Pix">
+            <div class="well">
+                <p>The number of saved points per lines. This number is a power of two (by exemple, if you set 3, you will have 2³ images, which means 8 pixels per lines)</p>
+            </div>
+        </div>
+        <select class="form-control" id="nbrPix" placeholder="Between 2 and 16384" ng-model="data.settings.nbrPix">
+            <option value="2">3</option>
+            <option value="4">5</option>
+            <option value="8">9</option>
+            <option value="16">17</option>
+            <option value="32">33</option>
+            <option value="64">65</option>
+            <option value="128">129</option>
+            <option value="256">257</option>
+            <option value="512">513</option>
+            <option value="1024">1025</option>
+            <option value="2048">2049</option>
+            <option value="4096">4097</option>
+            <option value="8192">8193</option>
+            <option value="16384">16385</option>
+
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="decimation">Decimation</label>
+        <button class="btn btn-info btn-xs btn-rnd" type="button" data-toggle="collapse" data-target="#dcmtion" aria-expanded="false" aria-controls="dcmtion">
+            Info
+        </button>
+        <div class="collapse" id="dcmtion">
+            <div class="well">
+                <p>The Decimation is the number of ignored points you have between two saved points. This number will be a power of 8 (if you set it to 1, you will have 8¹ points between two saved points, which means 8 points between two saved points). The values of each saved points are averaged with the ignored ones</p>
+            </div>
+        </div>
+        <input type="number" class="form-control" id="decimation" placeholder="Between 1 and 5" ng-model="data.settings.decimation" min="1" max="5" step="1">
+    </div>
+
+    <button type="submit" class="btn btn-default right">Next</button>
+</form>

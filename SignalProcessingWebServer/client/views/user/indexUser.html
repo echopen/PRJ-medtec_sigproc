@@ -1,0 +1,23 @@
+<h1>List of users</h1>
+
+<table class="table table-bordered" ng-controller="DataController as data">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    <tr ng-repeat="user in usr.users">
+        <td>{{user.last_name}} {{user.first_name}}</td>
+        <td>{{user.email}}</td>
+        <td><div ng_show ="user.admin == 1">Admin</div>
+            <div ng_show ="user.admin == 0">User</div></td>
+        <td>
+            <a ng-click="main.setuser2(user)" href="/users/data" class="btn btn-info">Show catches</a>
+            <a ng-click = "main.setuser2(user)" href="/users/EditUser" class="btn btn-success">Edit</a>
+            <button ng-click = "usr.removeUser(user._id)" class="btn btn-danger">Delete</button>
+            <button ng_show ="user.admin == 1" ng-click = "usr.Upordown(user)" class="btn btn-warning">Downgrade in user</button>
+            <button ng_show ="user.admin == 0" ng-click = "usr.Upordown(user)" class="btn btn-warning">Upgrade in Admin</button>
+        </td>
+    </tr>
+</table>
