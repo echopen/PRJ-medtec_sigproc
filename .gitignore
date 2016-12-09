@@ -60,3 +60,7 @@ media/
 
 venv_bootcamp/
 staticfiles
+
+#IDE stuff
+.idea
+.DS_Store
