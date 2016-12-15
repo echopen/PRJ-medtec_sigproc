@@ -7,7 +7,7 @@ var net = require('net');
 var msg = [];
 
 module.exports= function(app){
-	  
+	
 net.createServer(function (socket) {
 
       // Identify this client
@@ -55,7 +55,20 @@ net.createServer(function (socket) {
   
 
     app.post('/api/sendSettings', function(req, res) {
-        var settings = req.body;
+        
+		function convertIntTo2BytesChar(param){
+			if(param < 128){
+				var null_char = String.fromCharCode(0);
+				output = null_char + String.fromCharCode(param);
+			}
+			else{
+				var null_char = String.fromCharCode(1);
+				output = null_char + String.fromCharCode(param-128);
+			}
+			return output;
+		}
+		
+		var settings = req.body;
         var dec = settings.decimation;
         var xo = settings.b_mesu;
         var xf = settings.e_mesu;
@@ -64,19 +77,21 @@ net.createServer(function (socket) {
         var an = settings.angle;
         lin = settings.nb_lin;
         img = settings.nb_img; 
+		
         // stringed to see the input send in the console
         var dataString = dec + xo + xf + dr + er + an + lin + img;
         console.log("passing in sendSettings");              
           
-        var decimation = String.fromCharCode(dec);
-        var b_mesu = String.fromCharCode(xo);
-        var e_mesu = String.fromCharCode(xf);
-        var d_ramp = String.fromCharCode(dr);
-        var e_ramp = String.fromCharCode(er);
-        var angle = String.fromCharCode(an);
-        var nb_lin= String.fromCharCode(lin);
-        var nb_img = String.fromCharCode(img);
+        var decimation = convertIntTo2BytesChar(dec);
+        var b_mesu = convertIntTo2BytesChar(xo);
+        var e_mesu = convertIntTo2BytesChar(xf);
+        var d_ramp = convertIntTo2BytesChar(dr);
+        var e_ramp = convertIntTo2BytesChar(er);
+        var angle = convertIntTo2BytesChar(an);
+        var nb_lin= convertIntTo2BytesChar(lin);
+        var nb_img = convertIntTo2BytesChar(img);
         // sending in ASCII
+			
         var input = decimation + b_mesu + e_mesu + d_ramp + e_ramp + angle + nb_lin + nb_img;
      
         var calculPix = (((2*(xf-xo)*125)/1.48)/dec);
@@ -90,7 +105,7 @@ net.createServer(function (socket) {
     
           // creation of the img.txt file 
 		var wstream = fs.createWriteStream(path.join(__dirname,"../public/img.txt"));
-		
+				
 		wstream.write("decimation = " + dec+ "/"
                           + " xo = "+ xo + "/"
                           + " xf = "+ xf + "/"
