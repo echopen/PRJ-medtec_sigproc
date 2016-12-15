@@ -1,6 +1,7 @@
 var Data = require('./data.model'),
     fs = require('graceful-fs'),
     godata = [];
+var path = require('path');
 
 module.exports = function(app) {
 
@@ -21,7 +22,7 @@ module.exports = function(app) {
     app.get('/api/receive',function(req, res){
         setTimeout(function() {
             var content;
-            content = fs.readFileSync("./public/img.txt", "UTF-8");
+            content = fs.readFileSync(path.join(__dirname,"../public/img.txt"), "UTF-8");
             godata.push(content);
          res.status(200).send(godata)
             }, 6000);
@@ -41,7 +42,7 @@ module.exports = function(app) {
      @param string id : id of images in urk
      @return return nothing */
     app.get('/api/:id/sendImages',function(req,res){
-        Data.findById(req.params.id,function(err, datum) {
+		Data.findById(req.params.id,function(err, datum) {
     	    if(err){console.log(err);};
     	    if(datum){
 	        	var images = datum.images;

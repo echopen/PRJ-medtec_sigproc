@@ -45,7 +45,7 @@ to use or to create the 'echopen' database
 
 finally, go to kitsoft/SignalProcessingWebServer  and type :
 ```
- node --max_old_space_size=100000 --max_executable_size=100000 --optimize-for_size index.js
+ node --max_old_space_size=100000 --max_executable_size=100000 --optimize-for_size server/index.js
 ```
 server will be available on localhost:3700 
 
@@ -62,6 +62,7 @@ finally, go to kitsoft/SignalProcessingWebServer  and type :
  node --max_old_space_size=100000 --max_executable_size=100000 --optimize-for_size server/index.js
 ```
 server will be available on localhost:3700 
+
 
 ### if u have some problems with mongod ###
 

@@ -6,7 +6,7 @@ angular.module('app')
         /** @brief set process variable for the time between the sendSettings and getData functions
          @param no param
          @return no return */
-        /*this.setProcess = function (){
+        this.setProcess = function (){
             $scope.data.process = 'ok';
         };
 
@@ -39,7 +39,7 @@ angular.module('app')
         /** @brief recovered the settings from the settings page html and send it on the c server
          @param object settings : all the parameters entered by the user or set it by default
          @return no return */
-        this.sendSettings = function(){ 
+        this.sendSettings = function(){
             $http.post('/api/sendSettings', this.settings);
             $http.get('/api/receive').then(function(res){
                 $scope.data.sendData(res.data)

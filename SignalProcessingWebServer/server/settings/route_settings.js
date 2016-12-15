@@ -1,10 +1,13 @@
 var settings = require('./settings_model');
 var fs = require('graceful-fs');
+var plain_fs = require('fs');
+var path = require('path');
 var net = require('net');
 //var clients = [];
 var msg = [];
 
 module.exports= function(app){
+	  
 net.createServer(function (socket) {
 
       // Identify this client
@@ -16,7 +19,7 @@ net.createServer(function (socket) {
        
       // Handle incoming messages from clients.
       socket.on('data', function (data) {
-
+		  
         if(Ndr<Ndt){
             for(k=0;k<data.length;k++){
                 Buff[Ndr+k]=data[k];	
@@ -28,20 +31,18 @@ net.createServer(function (socket) {
       }); //  socket.on data end
 
       function writingFile(){
-        grille = new Array();
+		var wstream = fs.createWriteStream(path.join(__dirname,"../public/img.txt"),{flags: 'a'});
+  		
         for(k = 0; k < img ; k++){
             for(i = 0; i < nbPix; i++){
-                grille[i + k * nbPixImg] = new Array();
-                fs.appendFile('./public/img.txt', '\n');
-                    for(j = 0 ; j < lin; j++){
-                        grille[i + k * nbPixImg][j]= Buff[k * nbPixImg + i + j * nbPix];
-                        if(!isNaN(grille[i + k * nbPixImg][j])){
-                            fs.appendFile('./public/img.txt', grille[i + k * nbPixImg][j] + " ");
-                        };
-                      };
+				wstream.write("\n");
+				for(j = 0 ; j < lin; j++){
+                	wstream.write(Buff[i + k * nbPixImg + j * nbPix] + " ");
+				}
             };
-            fs.appendFile('./public/img.txt', '\n');
+			wstream.write("\n");
         };
+		wstream.end();
       };
 
 
@@ -54,7 +55,6 @@ net.createServer(function (socket) {
   
 
     app.post('/api/sendSettings', function(req, res) {
-
         var settings = req.body;
         var dec = settings.decimation;
         var xo = settings.b_mesu;
@@ -62,11 +62,11 @@ net.createServer(function (socket) {
         var dr = settings.d_ramp;
         var er = settings.e_ramp;
         var an = settings.angle;
-        var lin = settings.nb_lin;
-        var img = settings.nb_img;   
+        lin = settings.nb_lin;
+        img = settings.nb_img; 
         // stringed to see the input send in the console
         var dataString = dec + xo + xf + dr + er + an + lin + img;
-        console.log(dataString);              
+        console.log("passing in sendSettings");              
           
         var decimation = String.fromCharCode(dec);
         var b_mesu = String.fromCharCode(xo);
@@ -89,12 +89,9 @@ net.createServer(function (socket) {
         Buff = new Array([Ndt]);
     
           // creation of the img.txt file 
-          fs.writeFile("./public/img.txt", "", function(err){
-              if(err){console.log(err)};
-                console.log("the file was saved");
-          });
-          // writing header with settings
-          fs.appendFile("./public/img.txt", "decimation = " + dec+ "/"
+		var wstream = fs.createWriteStream(path.join(__dirname,"../public/img.txt"));
+		
+		wstream.write("decimation = " + dec+ "/"
                           + " xo = "+ xo + "/"
                           + " xf = "+ xf + "/"
                           + " dramp = "+ dr + "/"
@@ -102,8 +99,11 @@ net.createServer(function (socket) {
                           + " angle = "+ an + "/"
                           + " nb lign = "+ lin + "/"
                           + " nb img = "+ img);
+		
+          
           // sending the input to the socket
           socket.write(input);
+		  console.log("end writing header");
           res.end();
       }); //  app.post(..sendSettings) end
     }).listen(9000);
