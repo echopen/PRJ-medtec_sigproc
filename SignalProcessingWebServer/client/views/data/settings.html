@@ -15,9 +15,10 @@
                         <p>The Decimation is the number of ignored points you have between two saved points. The values of each saved points are averaged with the ignored ones</p>
                     </div>
                 </div>
-                <select class="form-control" id="decimation" placeholder="1 or 8" ng-model="data.settings.decimation">
-                     <option value="1" ng-click="deci_bool=0">1</option>
-                     <option value="8" ng-click="deci_bool=1">8</option>
+                <select ng-init="data.settings.decimation = 1" class="form-control" id="decimation" placeholder="1 or 8" ng-model="data.settings.decimation"
+				>
+                     <option type="number" value="1" ng-click="deci_bool=0">1</option>
+                     <option type="number" value="8" ng-click="deci_bool=1">8</option>
                 </select>
             </div>
 
@@ -34,8 +35,8 @@
                     </div>
                 </div>
 
-                <input ng-if="deci_bool" type="number" class="form-control" id="b_mesu" placeholder="Between 0 and 194" ng-model="data.settings.b_mesu" min="0" max="194" step="1" ng-click="b_mesu_ctrl" required>
-                <input ng-if="!deci_bool" type="number"  class="form-control" id="b_mesu" placeholder="Between 0 and 97" ng-model="data.settings.b_mesu" min="0" max="97" step="1" ng-click="b_mesu_ctrl" required>
+                <input ng-if="deci_bool" type="number" class="form-control" id="b_mesu" placeholder="Between 0 and 255" ng-model="data.settings.b_mesu" min="0" max="255" step="1" ng-click="b_mesu_ctrl" required>
+                <input ng-if="!deci_bool" type="number"  class="form-control" id="b_mesu" placeholder="Between 0 and {{(data.settings.decimation * 1 -1)/7*255 + (data.settings.decimation * 1 -8)/7*(-97)}}" ng-model="data.settings.b_mesu" min="0" max="97" step="1" ng-click="b_mesu_ctrl" required>
             </div>
            
     <!---          End of measurement             -->
@@ -50,7 +51,8 @@
                         <p>The image is made between x<small>o</small> and x<small>f</small> (in mm)</p>
                     </div>
                 </div>
-                <input type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu + 1}} and 194" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="194" step="1" required>
+                <input ng-if="deci_bool" type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu + 1}} and 255" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="255" step="1" required>
+				<input ng-if="!deci_bool" type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu + 1}} and 97" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="97" step="1" required>
                
             </div> 
     <!---          Value of the ramp - beginning             -->
