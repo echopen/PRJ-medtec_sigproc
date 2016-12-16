@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="MainController as main">
+
+<head>
+    <base href="/">
+    <title>echOpen</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="images/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+<!-- MainController -->
+<div class="container">
+    <!-- Navbar -->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#user" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img class="navbar-brand" src="images/logo.png">
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="user">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="http://echopen.org/index.php?title=Main_Page" onclick="window.open(this.href); return false;">Wiki<span class="sr-only">(current)</span></a></li>
+                    <div ng-switch on="main.session" class="nav navbar-nav">
+                        <li ng-switch-when="ko" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sign In / Sign Up<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/users/SignIn">Sign In</a></li>
+                                <li><a href="/users/SignUp">Sign Up</a></li>
+                            </ul>
+                        </li>
+                        <li ng-switch-when="ok" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{main.user.first_name}}<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="" ng-click="main.signout()">Sign out</a></li>
+                                <li><a ng-click="main.setuser2(main.user)" href="/users/EditUser">My account</a></li>
+                            </ul>
+                        </li>
+                        <li ng-switch-when="ok" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Images<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a ng-click="main.setuser2(main.user)" href="/users/data">My catches</a></li>
+                                <li><a href="/">Take a picture</a></li>
+                            </ul>
+                        </li>
+                        <li ng-show = "main.user.admin == 1"><a href="/users/listUsers">List of users</a></li>
+
+                    </div>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <!-- !Navbar -->
+
+<!-- Angular View -->
+<div class="resize">
+    <div ng-view >
+    </div>
+</div>
+<!-- !Angular View -->
+
+</div>
+<!-- MainController -->
+<footer class="footer">
+    <p>echOpen s'engage à ce que toutes les informations personnelles concernant
+        l'utilisateur contenues dans le formulaire de souscription soient considérées
+        comme des informations confidentielles et ne soient utilisées qu'à des fins de communication.
+        Ces informations feront l'objet d'un traitement automatisé. Conformément à la loi informatique et
+        libertés du 6 janvier 1978, le client dispose d'un droit d'accès, de rectification et d'opposition
+        aux données personnelles le concernant. Pour plus d'informations
+        <a rel="nofollow" class="external text" href="mailto:contact@echopen.org">contactez-nous</a>
+        , ou jetez un coup d'oeil aux <a href="http://echopen.org/index.php?title=Mentions_légales" title="Mentions légales">Mentions légales</a>
+        ou aux <a href="http://echopen.org/index.php?title=CGU" title="CGU"> conditions générales d'utilisation</a> du wiki echopen.</p>
+</footer>
+<!-- JS Includes -->
+<script src="/libs/jquery/dist/jquery.min.js"></script>
+<script src="/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/libs/angular/angular.js"></script>
+<script src="/libs/angular-route/angular-route.min.js"></script>
+<script src="/libs/angular-md5/angular-md5.js"></script>
+<script src="/libs/angular-cookies/angular-cookies.js"></script>
+
+
+<script src="/js/app.js"></script>
+<script src="/js/controllers/MainController.js"></script>
+<script src="/js/controllers/UserController.js"></script>
+<script src="/js/controllers/DataController.js"></script>
+<script src="/js/routes.js"></script>
+<!-- !JS Includes -->
+
+</body>
+<div class="clear" style="clear:both"></div>
+</html>

@@ -1,0 +1,16 @@
+<h1>Data of {{main.user.first_name}} {{main.user.last_name}}</h1>
+
+<table class="table table-bordered table-hover" ng-controller="DataController as data">
+    <tr>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+    <tr ng-repeat="datum in data.datas" >
+        <td>{{datum.created}}</td>
+        <td>
+            <button ng-click="data.sendImages(datum)" type="submit" class="btn btn-info">Download</button>
+            <button ng-click="data.removedata(datum._id)" type="submit" class="btn btn-danger">Delete</button>
+
+        </td>
+    </tr>
+</table>
