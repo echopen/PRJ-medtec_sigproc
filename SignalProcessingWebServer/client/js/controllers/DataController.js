@@ -2,18 +2,42 @@ angular.module('app')
     .controller('DataController', function($scope, $http, $location, $route, $window) {
         var _this = this;
         this.process = "ko";
+		
+		function checkSanityData(settings){
+			if(constructBool(settings)){
+				$scope.data.process = 'ko';
+				console.log("ko");
+			}
+			else{
+				$scope.data.process = 'ok';
+				console.log("ok");
+			}
+		};
+		
+		function constructBool(settings){
+			return (settings.decimation != 1 && settings.decimation!=8)|| 
+			(settings.b_mesu<0||settings.b_mesu>97) || 
+			(settings.e_mesu<1||settings.e_mesu>194) ||
+			(!settings.e_mesu) ||
+			(settings.d_ramp<0||settings.d_ramp>255) ||
+			(settings.e_ramp<1||settings.e_ramp>255) ||
+			(!settings.e_ramp) ||	
+			(settings.angle<1||settings.angle>180) ||
+			(settings.nb_lin<1||settings.nb_lin>255) ||	
+			(settings.nb_img<1||settings.nb_img>50);
+		};
  
         /** @brief set process variable for the time between the sendSettings and getData functions
          @param no param
          @return no return */
-        this.setProcess = function (){
-            $scope.data.process = 'ok';
+        this.setProcess = function(){
+			checkSanityData(this.settings);
         };
 
         /** @brief set all data in the datas variable for display this in data page html
          @param no param
          @return set datas variable*/
-        this.getData =function(){
+        this.getData = function(){
             $http.get('/api/Data',$scope.main.user2)
                 .then(function (res) {
                     _this.datas = res.data;

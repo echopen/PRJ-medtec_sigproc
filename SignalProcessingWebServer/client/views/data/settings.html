@@ -50,8 +50,8 @@
                         <p>The image is made between x<small>o</small> and x<small>f</small> (in mm)</p>
                     </div>
                 </div>
-                <input ng-if="deci_bool" type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu + 1}} and 194" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="194" step="1" required>
-                <input ng-if="!deci_bool" type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu+1}} and 97" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="97" step="1" required>
+                <input type="number" class="form-control" id="e_mesu" placeholder="Between {{data.settings.b_mesu + 1}} and 194" ng-model="data.settings.e_mesu" min={{data.settings.b_mesu+1}} max="194" step="1" required>
+               
             </div> 
     <!---          Value of the ramp - beginning             -->
 
