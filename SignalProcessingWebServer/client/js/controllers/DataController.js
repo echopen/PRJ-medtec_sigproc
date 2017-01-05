@@ -2,18 +2,57 @@ angular.module('app')
     .controller('DataController', function($scope, $http, $location, $route, $window) {
         var _this = this;
         this.process = "ko";
+		
+		function checkSanityData(settings){
+			if(constructBool(settings)){
+				$scope.data.process = 'ko';
+				console.log("ko");
+			}
+			else{
+				$scope.data.process = 'ok';
+				console.log("ok");
+			}
+		};
+		
+		function constructBool(settings){
+			var dec;
+			if (settings.decimation == 1)
+				dec = 97;
+			else if(settings.decimation == 8)
+				dec = 255;
+			
+			return definedData ||
+			(settings.decimation != 1 && settings.decimation!=8)|| 
+			(settings.b_mesu<0||settings.b_mesu>dec) || 
+			(settings.e_mesu< b_mesu+1||settings.e_mesu>dec) ||
+			(settings.d_ramp<0||settings.d_ramp>255) ||
+			(settings.e_ramp<1||settings.e_ramp>255) ||
+			(settings.angle<1||settings.angle>180) ||
+			(settings.nb_lin<1||settings.nb_lin>255) ||	
+			(settings.nb_img<1||settings.nb_img>50);
+		};
+		
+		function definedData(){
+			return (!settings.b_mesu) || 
+			(!settings.e_mesu) ||
+			(!settings.d_ramp) ||
+			(!settings.e_ramp) ||
+			(!settings.angle) ||
+			(!settings.nb_lin) ||
+			(!settings.nb_img);
+		}
  
         /** @brief set process variable for the time between the sendSettings and getData functions
          @param no param
          @return no return */
-        this.setProcess = function (){
-            $scope.data.process = 'ok';
+        this.setProcess = function(){
+			checkSanityData(this.settings);
         };
 
         /** @brief set all data in the datas variable for display this in data page html
          @param no param
          @return set datas variable*/
-        this.getData =function(){
+        this.getData = function(){
             $http.get('/api/Data',$scope.main.user2)
                 .then(function (res) {
                     _this.datas = res.data;
@@ -40,10 +79,10 @@ angular.module('app')
          @param object settings : all the parameters entered by the user or set it by default
          @return no return */
         this.sendSettings = function(){
-            $http.post('/api/sendSettings', this.settings);
-            $http.get('/api/receive').then(function(res){
-                $scope.data.sendData(res.data)
-            })
+            //$http.post('/api/sendSettings', this.settings);
+            //$http.get('/api/receive').then(function(res){
+            //$scope.data.sendData(res.data)
+            //})
         };
 
         /** @brief download image request in the client user

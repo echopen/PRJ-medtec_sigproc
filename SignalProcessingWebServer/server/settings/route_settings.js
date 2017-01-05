@@ -31,6 +31,41 @@ module.exports = function(app) {
         }
         return output;
     }
+	
+	function checkSanityData(settings){
+		if(!constructBool(settings)){
+			return true;
+		}
+		return false;
+	};
+	
+	function definedData(){
+		return (!settings.b_mesu) || 
+		(!settings.e_mesu) ||
+		(!settings.d_ramp) ||
+		(!settings.e_ramp) ||
+		(!settings.angle) ||
+		(!settings.nb_lin) ||
+		(!settings.nb_img);
+	}
+	
+	function constructBool(settings){
+		var dec;
+		if (settings.decimation == 1)
+			dec = 97;
+		else if(settings.decimation == 8)
+			dec = 255;
+		
+		return definedData ||
+		(settings.decimation != 1 && settings.decimation!=8)|| 
+		(settings.b_mesu<0||settings.b_mesu>dec) || 
+		(settings.e_mesu<b_mesu+1||settings.e_mesu>dec) ||
+		(settings.d_ramp<0||settings.d_ramp>255) ||
+		(settings.e_ramp<1||settings.e_ramp>255) ||
+		(settings.angle<1||settings.angle>180) ||
+		(settings.nb_lin<1||settings.nb_lin>255) ||	
+		(settings.nb_img<1||settings.nb_img>50);
+	};
 
     var server = net.createServer(function(socket) {
 
@@ -40,7 +75,6 @@ module.exports = function(app) {
 	    */
         server.getConnections(function(err, count) {
             var id = 0; //sha1(socket.remoteAddress);
-            console.log("id : ", id);
             clients[id] = {
                 stream: through(),
                 socket: socket,
@@ -95,9 +129,7 @@ module.exports = function(app) {
     }).listen(9000);
 
     app.post('/api/sendSettings', function(req, res) {
-
-        var id = req.query.id;
-
+		
         var settings = req.body;
         var dec = settings.decimation;
         var xo = settings.b_mesu;
@@ -107,6 +139,11 @@ module.exports = function(app) {
         var an = settings.angle;
         lin = settings.nb_lin;
         img = settings.nb_img;
+		
+		if(checkSanityData(settings))
+	        console.log("sane data");
+		else
+	        res.end();
 
         // stringed to see the input send in the console
         var dataString = dec + xo + xf + dr + er + an + lin + img;
