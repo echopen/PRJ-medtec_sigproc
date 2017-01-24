@@ -1,19 +1,11 @@
-import numpy as np
 
-def normImag(A):
-    A = A - A.min()
-    A = 1.0*A/A.max()
-    return(A)
-    
-def reconstructImage(rawSignal,image_shape) :
-    # Here is a copy of the baseline method. Replace that by another method.
-    reconstructedImage = np.zeros(shape=(image_shape[0],image_shape[1]))
-    decimationFactor = 1.0*rawSignal.shape[0]/image_shape[0]
+def install_packages()
+    import numpy as np
+    import pip
+    pip.main(['install', 'numpy'])
 
-    for i in range(rawSignal.shape[0]):
-           for j in range(image_shape[1]):
-                reconstructedImage[int(i/decimationFactor)][j] += np.abs(rawSignal[i][j])
 
-    reconstructedImage = normImag(np.abs(reconstructedImage))
-    # The function should return the reconstructed image
-    return reconstructedImage
+
+def run():
+	pass
+	

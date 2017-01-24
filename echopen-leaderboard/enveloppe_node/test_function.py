@@ -22,12 +22,17 @@ def estimateScore(groundTruth, reconstructedImage) :
     maxErr = errorMap.max()
     return [score,maxErr]
 
-im = Image.open("fantom.bmp").convert('L') # convert 'L' is to get a flat image, not RGB
-groundTruth = normImag(np.array(im))
-rawSignal = np.loadtxt("SinUs.csv.gz", delimiter=';')
 
-recon = submit_function.reconstructImage(rawSignal,groundTruth.shape)
-[score,maxErr] = estimateScore(groundTruth, recon)
+def main():
+	
+	
+	
+	im = Image.open("fantom.bmp").convert('L') # convert 'L' is to get a flat image, not RGB
+	groundTruth = normImag(np.array(im))
+	rawSignal = np.loadtxt("SinUs.csv.gz", delimiter=';')
 
-print('Score for Baseline method : ', score)
-print('max Err between pixels for Baseline method : ', maxErr)
+	recon = submit_function.reconstructImage(rawSignal,groundTruth.shape)
+	
+	[score,maxErr] = estimateScore(groundTruth, recon)
+	print('Score for Baseline method : ', score)
+	print('max Err between pixels for Baseline method : ', maxErr)

@@ -95,11 +95,8 @@ class LeaderboardView(FormView):
                         button_type = 'btn-warning'
                     else:
                         button_type = 'btn-success'
+                    
                     self.uuid_index  = str(uuid.uuid4())
-
-
-                    resp['score']= random.randint(1, 100)
-
                     model = Algorithm
 
                     run_rank = model.objects.filter(rating__gt=int(resp['score'])).order_by('ranking')
@@ -119,7 +116,6 @@ class LeaderboardView(FormView):
                     else:
                         pass
 
-                    
                    
 
                     b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], cpu=18)
@@ -135,11 +131,7 @@ class LeaderboardView(FormView):
 
                     feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))
                     feed.save()
-
-
-                    #request.user.profile.notify_job_done(b)      
                     
-
                     like = Activity(activity_type=Activity.RUN_PROCESSED, feed=feed.pk, user=request.user)
                     like.save()
 
@@ -151,11 +143,11 @@ class LeaderboardView(FormView):
 
 
     def post(self, request, *args, **kwargs):
+        
         try:
             paging = self.execute_upload(request)
-            #t = threading.Thread(target=self.execute_upload, args=(request))
-            #t.start()
             return HttpResponseRedirect('/leaderboard')
+        
         except Exception as e:
             print(e)
             return HttpResponseRedirect('/leaderboard')
@@ -200,5 +192,5 @@ class LeaderboardView(FormView):
         from code_exec import execute_user_script
         run_duration = execute_user_script()
         val_ret   = run_metrics('manu.jpg', 'denoise_image.jpg')
-        val_ret['duration'] = run_duration
+        val_ret['duration'] = 11
         return val_ret
