@@ -9,7 +9,7 @@ Front-server : django infrastructure, which can by started by >> python manage.p
 
 Back-server : will process your code against datas and images depend with our challenge >> python echopen-leaderboard/processor-node/server_echopen.py.
 
-Sign_in and submit this code on the IDE for example :  echopen-leaderboard/processor-node/uploaded_custom.py.
+Sign_in and submit this code on the IDE for example you can submit:  echopen-leaderboard/processor-node/uploaded_custom.py.
 
 
 These 2 side discuss with rabbitmq, which have to be installed first on your local machine.
