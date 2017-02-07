@@ -18,14 +18,16 @@ from bootcamp.activities.models import Activity
 import numpy
 from skimage import io
 from skimage import filter
-from skimage import restoration
+#from skimage import restoration
 from skimage import measure
 import time
 
+from kombu import Connection
+import datetime
+
+import callme
 
 
-
-# http://yuji.wordpress.com/2013/01/30/django-form-field-in-initial-data-requires-a-fieldfile-instance/
 class FakeField(object):
     storage = default_storage
 
@@ -87,16 +89,24 @@ class LeaderboardView(FormView):
     def execute_upload(self,request):
                 import uuid
                 form = self.form_class(request.POST, request.FILES)
-                print request.FILES['file']
+
                 if  form.is_valid():
-                    print request.FILES['file']
-                    resp = self.handle_uploaded_file(request.FILES['file'])
+                    #resp = self.handle_uploaded_file(request.FILES['file'])
+                    with open('uploaded_custom.py', 'wb+') as destination:
+                        for chunk in request.FILES['file'].chunks():
+                            destination.write(chunk)
+                        destination.close()
+
+                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='amqp://echopen1:echopen1@127.0.0.1/echopen1', timeout=3600)
+               
+                    resp = proxy.enveloppe_extract(open('uploaded_custom.py', 'rb').read())
+
                     if resp['score'] < 100 :
                         button_type = 'btn-warning'
                     else:
                         button_type = 'btn-success'
-                    
                     self.uuid_index  = str(uuid.uuid4())
+
                     model = Algorithm
 
                     run_rank = model.objects.filter(rating__gt=int(resp['score'])).order_by('ranking')
@@ -106,7 +116,7 @@ class LeaderboardView(FormView):
 
                     else:
                         rank = 1
-
+                     
                     run_rank_low = model.objects.filter(rating__lte=int(resp['score']))
                     if len(run_rank_low) > 0 :
                         for i in run_rank_low:
@@ -115,9 +125,8 @@ class LeaderboardView(FormView):
 
                     else:
                         pass
-
-                   
-
+                    
+                                  
                     b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], cpu=18)
                     b.save()
                     job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
@@ -131,7 +140,11 @@ class LeaderboardView(FormView):
 
                     feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))
                     feed.save()
+
+
+                    #request.user.profile.notify_job_done(b)      
                     
+
                     like = Activity(activity_type=Activity.RUN_PROCESSED, feed=feed.pk, user=request.user)
                     like.save()
 
@@ -143,11 +156,9 @@ class LeaderboardView(FormView):
 
 
     def post(self, request, *args, **kwargs):
-        
         try:
             paging = self.execute_upload(request)
             return HttpResponseRedirect('/leaderboard')
-        
         except Exception as e:
             print(e)
             return HttpResponseRedirect('/leaderboard')
@@ -186,11 +197,17 @@ class LeaderboardView(FormView):
             for chunk in f.chunks():
                 destination.write(chunk)
             destination.close()
-
+        val_ret = {'score':0,'duration': 0}
         ret = subprocess.check_output('python uploaded_custom.py', shell=True)
         import code_exec
         from code_exec import execute_user_script
-        run_duration = execute_user_script()
-        val_ret   = run_metrics('manu.jpg', 'denoise_image.jpg')
-        val_ret['duration'] = 11
+        import glob 
+        denoise_list = glob.glob('./kaggle/*_*.jpg')
+        total_list = glob.glob('./kaggle/*.jpg')
+        raw_list= list(set(total_list) - set(denoise_list))
+        run_duration = execute_user_script(raw_list)
+        for i in xrange(1,40):
+            tmp  = run_metrics('./kaggle/'+str(i)+'.jpg', './kaggle/denoise_'+str(i)+'.jpg')
+            val_ret['score'] += tmp['score']
+        val_ret['duration'] = run_duration
         return val_ret
