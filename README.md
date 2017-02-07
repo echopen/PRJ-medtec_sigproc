@@ -3,10 +3,10 @@
 Leaderboard is based on Bootcamp which is an open source **Enterprise social network** built with [Python][0] using the [Django Web Framework][1].
 
 ## Infrastructre
-*With our leaderboard infra you'll submit your source code, to win the challenge !!
-*Front-server : django infrastructure, which can by started by >> python manage.py runserver 0.0.0.0:8000
-*Back-server : will process your code against datas and images depend with our challenge >> python echopen-leaderboard/processor-node/server_echopen.py
-*Sign_in and submit this code on the IDE for example :  echopen-leaderboard/processor-node/uploaded_custom.py
+With our leaderboard infra you'll submit your source code, to win the challenge !!                   
+Front-server : django infrastructure, which can by started by >> python manage.py runserver 0.0.0.0:8000.
+Back-server : will process your code against datas and images depend with our challenge >> python echopen-leaderboard/processor-node/server_echopen.py.
+Sign_in and submit this code on the IDE for example :  echopen-leaderboard/processor-node/uploaded_custom.py.
 
 
 These 2 side discuss with rabbitmq, which have to be installed first on your local machine.
