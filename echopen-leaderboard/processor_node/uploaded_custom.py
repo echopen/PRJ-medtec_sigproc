@@ -11,7 +11,7 @@ def run(rawSignal,image_shape) :
            for j in range(image_shape[1]):
                 reconstructedImage[int(i/decimationFactor)][j] += np.abs(rawSignal[i][j])
     
-    A = np.abs(reconstructedImage)
+    A = np.abs(reonstructedImage)
     A = A - A.min()
     A = 1.0*A/A.max()
     reconstructedImage = A    

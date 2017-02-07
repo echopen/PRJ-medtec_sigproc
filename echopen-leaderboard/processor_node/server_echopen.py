@@ -8,18 +8,17 @@ from code_exec import execute_user_script
 def enveloppe_extract(func_str):
         import time
         import os
+        print('toto')
         os.system('rm uploaded_custom.py | touch uploaded_custom.py')
         ret = open('uploaded_custom.py', 'wb')
         ret.write(func_str)
         ret.close()
         val_ret = {'score':10,'duration': 0}
-        print('bidul')
-        print('nice')
-        #try:
-        val_ret = execute_user_script()
-        print(val_ret)            
-        #except Exception as  e:
-		#	print e
+        try:
+            val_ret = execute_user_script()
+            print(val_ret)            
+        except:
+            val_ret = {'score':0,'duration': 0}
         return val_ret
 
 

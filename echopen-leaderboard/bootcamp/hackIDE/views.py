@@ -111,8 +111,7 @@ class runCode(FormView):
 	   render(request, 'hackIDE/index.html')
     
   
-  def post(self, request): 
-	  print('toto')
+  def post(self, request):
 	  if request.is_ajax():
 		    source = request.POST['source']
 		    # Handle Empty Source Case
@@ -123,7 +122,7 @@ class runCode(FormView):
 		    lang_valid_check(lang)
 
                     proxy = callme.Proxy(server_id='fooserver2',amqp_host='localhost', timeout=3600)
-               
+                    print 'excet' 
                     resp = proxy.enveloppe_extract(source)
                     if resp['score'] < 100 :
                         button_type = 'btn-warning'

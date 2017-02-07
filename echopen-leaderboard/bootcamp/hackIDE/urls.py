@@ -41,8 +41,8 @@ urlpatterns = [
     url(r'^i18n/', include('django.conf.urls.i18n', namespace='i18n')),
     url(r'^leaderboard$', LeaderboardView.as_view(), name='leaderboard'),
     url(r'^hackIDE$', index, name='hackIDE'),
-    url(r'^doodle$', doodleview, name='doodle'), 
-    url(r'^run$', LeaderboardView.as_view(), name='run'),
+    #url(r'^doodle$', doodleview, name='doodle'), 
+    url(r'^run$', runCode.as_view(), name='run'),
     url(r'(?P<code_id>\w{0,50})/$', savedCodeView, name='saved-code'),
 ]
 
