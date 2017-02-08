@@ -5,13 +5,39 @@
 # @Last Modified by:   Sahil Dua
 # @Last Modified time: 2016-08-11 00:06:17
 
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from django.core.files.storage import default_storage
+from django.shortcuts import render
+
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models.fields.files import FieldFile
+from django.views.generic import FormView
+from django.views.generic.base import TemplateView
+from django.contrib import messages
+from django.http import HttpResponseRedirect, HttpResponse
+import string,random, subprocess
+from bootcamp.leaderboard.models import Algorithm
+from bootcamp.feeds.models import Feed
+from bootcamp.activities.models import Activity
+from django.http import HttpResponseRedirect, HttpResponse
+
+import string,random, subprocess
+from bootcamp.leaderboard.models import Algorithm
+from bootcamp.feeds.models import Feed
+from bootcamp.activities.models import Activity
+
+from kombu import Connection
+import datetime
+import callme
+
 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseForbidden
 from models import codes
 
-import requests, json, os
-
+import requests, json, os 
+import uuid
 
 # access config variable
 DEBUG = (os.environ.get('HACKIDE_DEBUG') != None)
@@ -64,91 +90,96 @@ def index(request):
 
 
 
-def doodleview(request):
-  # render the index.html
-  return render(request, 'doodle/index.html', {})
-
-"""
-Method catering to AJAX call at /ide/compile/ endpoint,
-makes call at HackerEarth's /compile/ endpoint and returns the compile result as a JsonResponse object
-"""
-def compileCode(request):
-  if request.is_ajax():
-    try:
-      source = request.POST['source']
-      # Handle Empty Source Case
-      source_empty_check(source)
-
-      lang = request.POST['lang']
-      # Handle Invalid Language Case
-      lang_valid_check(lang)
-
-    except KeyError:
-      # Handle case when at least one of the keys (lang or source) is absent
-      missing_argument_error()
-
-    else:
-      compile_data = {
-        'client_secret': CLIENT_SECRET,
-        'async': 0,
-        'source': source,
-        'lang': lang,
-      }
-
-      r = requests.post(COMPILE_URL, data=compile_data)
-      return JsonResponse(r.json(), safe=False)
-  else:
-    return HttpResponseForbidden()
 
 
 """
 Method catering to AJAX call at /ide/run/ endpoint,
 makes call at HackerEarth's /run/ endpoint and returns the run result as a JsonResponse object
 """
-def runCode(request):
-  if request.is_ajax():
-    try:
-      source = request.POST['source']
-      # Handle Empty Source Case
-      source_empty_check(source)
-
-      lang = request.POST['lang']
-      # Handle Invalid Language Case
-      lang_valid_check(lang)
-
-    except KeyError:
-      # Handle case when at least one of the keys (lang or source) is absent
-      missing_argument_error()
-
-    else:
-      # default value of 5 sec, if not set
-      time_limit = request.POST.get('time_limit', 5)
-      # default value of 262144KB (256MB), if not set
-      memory_limit = request.POST.get('memory_limit', 262144)
-
-      run_data = {
-        'client_secret': CLIENT_SECRET,
-        'async': 0,
-        'source': source,
-        'lang': lang,
-        'time_limit': time_limit,
-        'memory_limit': memory_limit,
-      }
 
 
-      r= {'run_status':{'status':'', 'time_used':'', 'memory_used':'', 'output_html':'', 'stderr':''}}
-      #r = r.json()
-      r['compile_status'] = 'OK'
-      r['run_status']['status'] = 'AC'
-      r['run_status']['time_used'] = 'ok_time'
-      r['run_status']['memory_used'] = 'ok_memory'
-      r['run_status']['output_html'] = 'ok_output'
-      r['run_status']['stderr'] =  'stderr'
-      r['code_id'] = 'joubidou'
-      return JsonResponse(r, safe=False)
+class runCode(FormView):
+  success_url = '/form_horizontal'
+  template_name = './demo/form_with_files.html'
 
-  else:
-    return HttpResponseForbidden()
+  def get_context_data(self, **kwargs):
+        context = super(runCode, self).get_context_data(**kwargs)        
+        return context
+  
+  
+  def get(self, request, *args, **kwargs):
+	   render(request, 'hackIDE/index.html')
+    
+  
+  def post(self, request):
+	  if request.is_ajax():
+		    source = request.POST['source']
+		    # Handle Empty Source Case
+		    source_empty_check(source)
+		    print source
+		    lang = request.POST['lang']
+		    # Handle Invalid Language Case
+		    lang_valid_check(lang)
+
+                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='localhost', timeout=3600)
+                    print 'excet' 
+                    resp = proxy.enveloppe_extract(source)
+                    if resp['score'] < 100 :
+                        button_type = 'btn-warning'
+                    else:
+                        button_type = 'btn-success'
+                    self.uuid_index  = str(uuid.uuid4())
+
+                    model = Algorithm
+
+                    run_rank = model.objects.filter(rating__gt=int(resp['score'])).order_by('ranking')
+                    if len(run_rank) > 0:
+                        rankobj = run_rank.last()
+                        rank = rankobj.ranking + 1
+
+                    else:
+                        rank = 1
+                     
+                    run_rank_low = model.objects.filter(rating__lte=int(resp['score']))
+                    if len(run_rank_low) > 0 :
+                        for i in run_rank_low:
+                            i.ranking += 1
+                            i.save()
+
+                    else:
+                        pass
+                    
+                                  
+                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], cpu=18)
+                    b.save()
+                    job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
+                    
+                    resp = model.objects.all().order_by('ranking')
+                    values = resp.values('run_id')
+                    
+                    for ind, item  in enumerate(values) :
+                        if (item['run_id']) == self.uuid_index :
+                            paging =  divmod(ind, 5)[0]
+
+                    feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))
+                    feed.save()
+
+
+                    #request.user.profile.notify_job_done(b)      
+                    
+
+                    like = Activity(activity_type=Activity.RUN_PROCESSED, feed=feed.pk, user=request.user)
+                    like.save()
+
+                    user = request.user
+                    user.profile.notify_liked_bis(feed)
+
+                    print 'Notified'
+		    return HttpResponse(render(request, 'hackIDE/index.html'))	
+
+	  else:
+		print('error')  
+		return HttpResponseForbidden()
 
 
 """
