@@ -1,7 +1,8 @@
 def install_packages():
     import pip
-    pip.main(['install', 'numpy'])
-    
+    #pip.main(['install', 'numpy'])
+    pass
+
 def run(rawSignal,image_shape) :
     # Here is a copy of the baseline method. Replace that by another method.
     reconstructedImage = np.zeros(shape=(image_shape[0],image_shape[1]))
