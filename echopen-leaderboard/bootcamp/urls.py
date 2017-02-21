@@ -10,9 +10,7 @@ from bootcamp.authentication import views as bootcamp_auth_views
 from bootcamp.activities import views as activities_views
 from bootcamp.search import views as search_views
 from bootcamp.leaderboard.views import LeaderboardView
-from bootcamp.hackIDE.views import index, runCode, savedCodeView
-
-
+from bootcamp.hackIDE.views import index, runCode, savedCodeView 
 
 urlpatterns = [
     url(r'^$', core_views.home, name='home'),
@@ -44,7 +42,7 @@ urlpatterns = [
     url(r'^leaderboard$', LeaderboardView.as_view(), name='leaderboard'),
     url(r'^hackIDE$', index, name='hackIDE'),
     url(r'^run$', runCode.as_view(), name='run'),
-    #url(r'^doodle$', doodleview, name='doodle'),	
+    url(r'(?P<code_id>\w{0,50})/$', savedCodeView, name='saved-code'),
 ]
 
 if settings.DEBUG:

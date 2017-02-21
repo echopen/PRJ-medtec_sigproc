@@ -1,24 +1,20 @@
 def install_packages():
     import pip
-    pip.main(['install', 'aesop'])
+    #pip.main(['install', 'numpy'])
+    pass
 
-def run():
-    print('toto')
-    import io
-    import os
-    import sys
-    import argparse
-    from skimage import io
-    from skimage import filter
-    from skimage import restoration
-    from skimage import measure
+def run(rawSignal,image_shape) :
+    # Here is a copy of the baseline method. Replace that by another method.
+    reconstructedImage = np.zeros(shape=(image_shape[0],image_shape[1]))
+    decimationFactor = 1.0*rawSignal.shape[0]/image_shape[0]
 
-    kidney_image = io.imread('manu.jpg')
-    # estimate the noise in the image
-    # do a test denosing using a total variation filter
-    kidney_image_denoised_tv = restoration.denoise_tv_chambolle( kidney_image, weight=0.1)
-    io.imsave('denoise_image.jpg', kidney_image_denoised_tv)
-
-
-
-
+    for i in range(rawSignal.shape[0]):
+           for j in range(image_shape[1]):
+                reconstructedImage[int(i/decimationFactor)][j] += np.abs(rawSignal[i][j])
+    
+    A = np.abs(reconstructedImage)
+    A = A - A.min()
+    A = 1.0*A/A.max()
+    reconstructedImage = A    
+    # The function should return the reconstructed image
+    return reconstructedImage
