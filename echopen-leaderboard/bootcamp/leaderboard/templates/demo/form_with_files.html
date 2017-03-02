@@ -18,15 +18,14 @@
   </div>
 
 <div class="container">
-  <h2>Submit your code for Enveloppe extraction</h2>
+  <h2>Submit your code for envelope detection</h2>
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>Developper</th>
+        <th>Name</th>
         <th>Rank</th>
         <th>Score</th>
         <th>Time</th>
-        <th>Cpu</th>
       </tr>
     </thead>
       {% for r in object %}
@@ -39,8 +38,6 @@
       <td width="10%">{{r.ranking}}</td>
       <td width="10%">{{r.rating}}</td>
       <td width="10%">{{r.time}}</td>
-      <td width="10%">{{r.cpu}}</td>
-      <td width="10%">100</td>
 
       <td width="1%"><button class="btn btn-primary glyphicon  glyphicon-download"></button></td>
       <td width="1%"><button class="btn btn-success glyphicon glyphicon-camera"></button></td>
@@ -58,27 +55,11 @@
         <li><a href='/leaderboard?q=foo&flop=flip&page={{val}}#'>{{val}}</a></li>
         {% endfor %}
         </ul>
-        <div>
-    </div>
-
-      <button class="btn btn-success glyphicon glyphicon-ok">
-          <span>Submit</span>
-      </button>
-      <button  class="btn btn-warning delete">
-        <i class="glyphicon glyphicon-info-sign"></i>
-        <span>Info</span>
-      </button>
-
-        <a class='btn btn-primary glyphicon glyphicon-upload' type="submit" href='javascript:;' >
-            Upload
-            <input type="file"  value="{{ file }}" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
-        </a>
-        &nbsp;
-        <span class='label label-info' id="upload-file-info"></span>
-
     </div>
     </div>
   </div>
 </div>
 </form>
+
+
 {% endblock main %}

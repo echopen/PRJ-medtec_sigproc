@@ -120,14 +120,14 @@ def run_metrics(image_file_name1,image_file_name2 ):
     image_name1 = io.imread(image_file_name1)
     image_name2 = io.imread(image_file_name2)
     peak_signal_to_noise_ratio = measure.compare_psnr (image_name1,image_name2)
-    print ("PSNR Peak signal to noise ratio is %s"%peak_signal_to_noise_ratio)
+    #print ("PSNR Peak signal to noise ratio is %s"%peak_signal_to_noise_ratio)
     mse = measure.compare_mse(image_name1,image_name2)
-    print  ("MSE Mean square error between the images is %s"%mse)
+    #print  ("MSE Mean square error between the images is %s"%mse)
     rmse = measure.compare_nrmse(image_name1,image_name2)
-    print  ("RMSE Normalised root mean square error between the images is %s"%rmse)
-    ssim = measure.compare_ssim(image_name1,image_name2, multichannel=True)
-    print ("SSIM Structural Similarity Index is %s"%ssim)
-    #[M3,M4] = minkowski_distance(image_name1,image_name2)
+    #print  ("RMSE Normalised root mean square error between the images is %s"%rmse)
+    #ssim = measure.compare_ssim(image_name1,image_name2, multichannel=True)
+    #print ("SSIM Structural Similarity Index is %s"%ssim)
+    #M4 = minkowski_distance(image_name1,image_name2)
     #print ("Minkowski distance is %s %s"%(M3,M4))
     #AD = average_difference(image_name1,image_name2)
     #print ("AD Average difference is %s"%AD)
@@ -137,7 +137,5 @@ def run_metrics(image_file_name1,image_file_name2 ):
     #print ("NK normalised cross correlation is %s"%NK)
     #MD = maximum_difference(image_name1,image_name2)
     #print ("Maximum difference is %s"%MD)
-    return {'peaktonoise':peak_signal_to_noise_ratio ,'mse': mse, 'rmse': rmse, 'ssim':ssim,'score':peak_signal_to_noise_ratio}
+    return {'score':peak_signal_to_noise_ratio}
 
-
-run_metrics('manu.jpg', 'denoise_image.jpg')

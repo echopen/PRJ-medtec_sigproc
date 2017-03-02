@@ -28,6 +28,8 @@ import datetime
 import callme
 
 
+
+
 class FakeField(object):
     storage = default_storage
 
@@ -97,14 +99,10 @@ class LeaderboardView(FormView):
                             destination.write(chunk)
                         destination.close()
 
-                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='amqp://echopen1:echopen1@127.0.0.1/echopen1', timeout=3600)
+                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='amqp://echopen1:echopen1@37.187.117.106/echopen1', timeout=3600)
                
-                    resp = proxy.enveloppe_extract(open('uploaded_custom.py', 'rb').read())
+                    resp = proxy.denoise(open('uploaded_custom.py', 'rb').read())
 
-                    if resp['score'] < 100 :
-                        button_type = 'btn-warning'
-                    else:
-                        button_type = 'btn-success'
                     self.uuid_index  = str(uuid.uuid4())
 
                     model = Algorithm
@@ -127,7 +125,7 @@ class LeaderboardView(FormView):
                         pass
                     
                                   
-                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], cpu=18)
+                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], source_code=source, cpu=18)
                     b.save()
                     job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
                     
@@ -174,7 +172,7 @@ class LeaderboardView(FormView):
             except Exception as e:
                 last_run_id = None
  
-            resp = model.objects.order_by('-rating')
+            #resp = model.objects.order_by('-rating')
             resp = model.objects.order_by('ranking')
             paginator = Paginator(resp, 5)
             page = self.request.GET.get('page')
@@ -211,3 +209,4 @@ class LeaderboardView(FormView):
             val_ret['score'] += tmp['score']
         val_ret['duration'] = run_duration
         return val_ret
+

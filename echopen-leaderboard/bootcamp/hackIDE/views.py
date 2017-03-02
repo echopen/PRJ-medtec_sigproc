@@ -111,7 +111,8 @@ class runCode(FormView):
 	   render(request, 'hackIDE/index.html')
     
   
-  def post(self, request):
+  def post(self, request): 
+	  print('toto')
 	  if request.is_ajax():
 		    source = request.POST['source']
 		    # Handle Empty Source Case
@@ -122,7 +123,7 @@ class runCode(FormView):
 		    lang_valid_check(lang)
 
                     proxy = callme.Proxy(server_id='fooserver2',amqp_host='localhost', timeout=3600)
-                    print 'excet' 
+               
                     resp = proxy.enveloppe_extract(source)
                     if resp['score'] < 100 :
                         button_type = 'btn-warning'
@@ -132,7 +133,7 @@ class runCode(FormView):
 
                     model = Algorithm
 
-                    run_rank = model.objects.filter(rating__gt=int(resp['score'])).order_by('ranking')
+                    run_rank = model.objects.filter(rating__lt=int(resp['score'])).order_by('ranking')
                     if len(run_rank) > 0:
                         rankobj = run_rank.last()
                         rank = rankobj.ranking + 1
@@ -140,7 +141,7 @@ class runCode(FormView):
                     else:
                         rank = 1
                      
-                    run_rank_low = model.objects.filter(rating__lte=int(resp['score']))
+                    run_rank_low = model.objects.filter(rating__gte=int(resp['score']))
                     if len(run_rank_low) > 0 :
                         for i in run_rank_low:
                             i.ranking += 1
@@ -150,7 +151,7 @@ class runCode(FormView):
                         pass
                     
                                   
-                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], cpu=18)
+                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], source_code=source, cpu=18)
                     b.save()
                     job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
                     
