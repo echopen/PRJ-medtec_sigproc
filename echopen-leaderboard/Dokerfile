@@ -1,0 +1,12 @@
+#Download base image leaderboard
+FROM python:2.7
+
+
+ADD ./requirements.txt /requirements.txt
+ADD ./bootcamp /bootcamp
+ADD ./hackIDE_project /hackIDE
+ADD ./processor_node /processor
+
+RUN pip install -r requirements.txt
+
+WORKDIR /echopen-leaderboard
