@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  background: #ffffff;
+  background-image:url('../images/base.jpg');
   font-family: 'Titillium Web', sans-serif;
 }
 
@@ -64,7 +64,7 @@ a:hover {
 }
 
 .tab-content > div:last-child {
-  display: none;
+  display: block;
 }
 
 h1 {
@@ -75,7 +75,7 @@ h1 {
 }
 
 img {
-  width: 400px;
+  width: 100%;
   height: auto;
 }
 

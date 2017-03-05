@@ -11,17 +11,15 @@
   <link rel="stylesheet" href="static/form/css/style.css">
 {% endblock head %}
 
-
 {% block body %}
   <div class="form">
     <h1><img src="static/form/images/logo2.png"></h1>
       <ul class="tab-group">
         <li class="tab active"><a href="#login">Log In</a></li>
-        <li class="tab"><a href="#signup">Sign Up</a></li>
+        <li> <a href="{% url 'signup' %}" >Sign Up</a></li>
       </ul>
 
       <div class="tab-content">
-
         <div id="login">
           <form action="{% url 'login' %}" method="post" role="form">{% csrf_token %}
             <div class="field-wrap">
@@ -38,13 +36,11 @@
             <input type="password" class="form-control" id="password" name="password">
           </div>
 
-          <p class="forgot"><a href="#">Forgot Password?</a></p>
+          <p class="forgot"><a href="{% url 'signup' %}">Forgot Password?</a></p>
             <button type="submit" class="button button-block">{% trans 'Log in' %}</button>
           <a href="{% url 'signup' %}" class="btn btn-link">{% trans 'Sign up for Echopen Challenge' %}</a>
 
           </form>
-
-
 
       </div><!-- tab-content -->
 
