@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^hackIDE$', index, name='hackIDE'),
     url(r'^doodle$', doodleview, name='doodle'), 
     #url(r'^run$', LeaderboardView.as_view(), name='run'),
-    url(r'(?P<code_id>\w{0,50})/$', savedCodeView, name='saved-code'),
+    #url(r'(?P<code_id>\w{0,50})/$', savedCodeView, name='saved-code'),
 ]
 
 if settings.DEBUG:

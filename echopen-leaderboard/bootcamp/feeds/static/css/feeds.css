@@ -165,3 +165,16 @@ ul.stream li div.post div.interaction a {
   padding-left: 15px;
   padding-right: 15px;
 }
+
+main{
+   width:80%;
+   margin-left: 10%;		
+   margin-right: 10%;	
+} 
+
+
+body{
+	width:100%;
+}
+
+

@@ -11,7 +11,7 @@ $(document).ready(function(){
 	// contents of the editor at any step
 	var editorContent;
 	// language selected
-	var languageSelected = "CPP";
+	var languageSelected = "PYTHON";
 	// editor-theme
 	var editorThemeSelected = "DARK";
 	// indent-spaces
@@ -34,7 +34,7 @@ $(document).ready(function(){
 	langBoilerplate['OBJECTIVEC'] = "#import <objc/objc.h>\n#import <objc/Object.h>\n#import <Foundation/Foundation.h>\n\n@implementation TestObj\nint main()\n{\n	// your code goes here\n	return 0;\n}\n@end";
 	langBoilerplate['PERL'] = "#!/usr/bin/perl\n# your code goes here\n";
 	langBoilerplate['PHP'] = "<?php\n\n// your code goes here\n";
-	langBoilerplate['PYTHON'] = "def main():\n    # Your code goes here\n\nif __name__ == \"__main__\":\n    main()";
+	langBoilerplate['PYTHON'] = "def install_packages():\n    import pip\n    pip.main(['install', 'my_package'])\n\n\ndef run(rawSignal,image_shape):\n    #your exec code here";
 	langBoilerplate['R'] = "# your code goes here";
 	langBoilerplate['RUBY'] = "# your code goes here";
 	langBoilerplate['RUST'] = "fn main() {\n    // The statements here will be executed when the compiled binary is called\n\n    // Print text to the console\n    println!(\"Hello World!\");\n}\n";
@@ -52,7 +52,7 @@ $(document).ready(function(){
 
 	// initial configuration of the editor
 	editor.setTheme("ace/theme/twilight");
-	editor.session.setMode("ace/mode/c_cpp");
+	editor.session.setMode("ace/mode/python");
 	editor.getSession().setTabSize(indentSpaces);
 	editorContent = editor.getValue();
 	editor.setFontSize(15);
@@ -209,7 +209,6 @@ $(document).ready(function(){
 
 		var csrf_token = $(":input[name='csrfmiddlewaretoken']").val();
 
-		var input_given = $("#custom-input").val();
 
 		var run_data = {
 				source: editorContent,
