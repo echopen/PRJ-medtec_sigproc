@@ -36,6 +36,7 @@ CACHES = {
 
 DATABASES = {
     'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'demo.db',
     }

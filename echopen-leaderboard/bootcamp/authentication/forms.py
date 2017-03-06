@@ -57,16 +57,22 @@ class SignUpForm(forms.ModelForm):
         max_length=30,
         required=True,
         help_text='Usernames may contain <strong>alphanumeric</strong>, <strong>_</strong> and <strong>.</strong> characters')
+
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        help_text = 'Password may contain <strong>alphanumeric</strong>, <strong>_</strong> and <strong>.</strong> characters')
+
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         label="Confirm your password",
-        required=True)
+        required=True,
+        help_text = 'Confirm your password')
+
     email = forms.CharField(
         widget=forms.EmailInput(attrs={'class': 'form-control'}),
         required=True,
-        max_length=75)
+        max_length=75,
+        help_text='Email')
 
     class Meta:
         model = User

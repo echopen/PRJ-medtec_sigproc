@@ -183,32 +183,3 @@ class runCode(FormView):
 		return HttpResponseForbidden()
 
 
-"""
-View catering to /code_id=xyz/ URL
-"""
-def savedCodeView(request, code_id):
-  result = codes.objects(code_id=code_id)
-  result = result[0].to_json()
-  result = json.loads(result)
-
-  code_content = result['code_content']
-  lang = result['lang']
-  code_input = result['code_input']
-  compile_status = str(result['compile_status'].encode('utf-8')).decode('utf-8')
-  run_status_status = result['run_status_status']
-  run_status_time = result['run_status_time']
-  run_status_memory = result['run_status_memory']
-  run_status_output = result['run_status_output']
-  run_status_stderr = result['run_status_stderr']
-
-  return render(request, 'hackIDE/index.html', {
-    'code_content': code_content,
-    'lang': lang,
-    'inp': code_input,
-    'compile_status': compile_status,
-    'run_status_status': run_status_status,
-    'run_status_time': run_status_time,
-    'run_status_output': run_status_output,
-    'run_status_memory': run_status_memory,
-    'run_status_stderr': run_status_status
-  })
