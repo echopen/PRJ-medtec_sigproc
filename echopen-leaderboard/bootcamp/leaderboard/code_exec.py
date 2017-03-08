@@ -1,7 +1,7 @@
 import ast
 import pip 
 
-def execute_user_script():
+def execute_user_script(file_list):
     f = open("uploaded_custom.py", "r")
     data = f.read()
 
@@ -40,6 +40,7 @@ def execute_user_script():
 
     install_packages()
     start = time.clock()
-    run()
+    for i in file_list :
+        run(i)
     end = time.clock()
     return (end - start)

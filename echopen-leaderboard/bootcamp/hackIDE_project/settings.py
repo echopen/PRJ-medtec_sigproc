@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '+h*i@$52+w(_e#etvzgnkjq!q0ajz1qpgs-y9%89x4w3nlct=m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (os.environ.get('HACKIDE_DEBUG') != None)
+DEBUG = True
 # DEBUG = (os.environ.get('HACKIDE_DEBUG') or "").lower() == "true"
 
 ALLOWED_HOSTS = ['hackide.herokuapp.com'] if not DEBUG else ['*']
@@ -31,6 +31,13 @@ os.environ['HE_CLIENT_SECRET'] = '8eba4fb5086f2a7e838388a5812c0c2faa77d612'
 # To allow the cross site request over the app
 CORS_ORIGIN_ALLOW_ALL = True
 
+# settings.py
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
 
 # Application definition
 

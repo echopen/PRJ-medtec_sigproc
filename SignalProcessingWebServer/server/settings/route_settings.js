@@ -1,60 +1,135 @@
 var settings = require('./settings_model');
 var fs = require('graceful-fs');
+var plain_fs = require('fs');
+var path = require('path');
 var net = require('net');
+var sha1 = require('sha1');
+var through = require('through2');
 //var clients = [];
 var msg = [];
 
-module.exports= function(app){
-net.createServer(function (socket) {
+module.exports = function(app) {
+    var clients = {};
 
-      // Identify this client
-    //  socket.name = socket.remoteAddress + ":" + socket.remotePort 
-      // Put this new client in the list
-    //  clients.push(socket);
+    function getLeaf(node) {
+        if (node.leftChild) {
+            return getLeaf(node.leftChild);
+        } else if (node.rightChild) {
+            return getLeaf(node.rightChild);
+        } else { // node must be a leaf node
+            return node;
+        }
+    }
 
-      socket.on('error',function(err){ console.error(err)});
-       
-      // Handle incoming messages from clients.
-      socket.on('data', function (data) {
+    function convertIntTo2BytesChar(param) {
+        if (param < 128) {
+            var null_char = String.fromCharCode(0);
+            output = null_char + String.fromCharCode(param);
+        } else {
+            var null_char = String.fromCharCode(1);
+            output = null_char + String.fromCharCode(param - 128);
+        }
+        return output;
+    }
+	
+	function checkSanityData(settings){
+		if(!constructBool(settings)){
+			return true;
+		}
+		return false;
+	};
+	
+	function definedData(){
+		return (!settings.b_mesu) || 
+		(!settings.e_mesu) ||
+		(!settings.d_ramp) ||
+		(!settings.e_ramp) ||
+		(!settings.angle) ||
+		(!settings.nb_lin) ||
+		(!settings.nb_img);
+	}
+	
+	function constructBool(settings){
+		var dec;
+		if (settings.decimation == 1)
+			dec = 97;
+		else if(settings.decimation == 8)
+			dec = 255;
+		
+		return definedData ||
+		(settings.decimation != 1 && settings.decimation!=8)|| 
+		(settings.b_mesu<0||settings.b_mesu>dec) || 
+		(settings.e_mesu<b_mesu+1||settings.e_mesu>dec) ||
+		(settings.d_ramp<0||settings.d_ramp>255) ||
+		(settings.e_ramp<1||settings.e_ramp>255) ||
+		(settings.angle<1||settings.angle>180) ||
+		(settings.nb_lin<1||settings.nb_lin>255) ||	
+		(settings.nb_img<1||settings.nb_img>50);
+	};
 
-        if(Ndr<Ndt){
-            for(k=0;k<data.length;k++){
-                Buff[Ndr+k]=data[k];	
+    var server = net.createServer(function(socket) {
+
+        /* 
+	    Detecting inward connections, using this method, rather than `socket.on('hello',...);` or 
+	    `socket.on('connection',...);`, be cause none of them worked, despite follwing the documentation
+	    */
+        server.getConnections(function(err, count) {
+            var id = 0; //sha1(socket.remoteAddress);
+            clients[id] = {
+                stream: through(),
+                socket: socket,
+            }
+            clients[id].stream.pipe(socket);
+        });
+        
+		/* Logging errors */
+        socket.on('error', function(err) {
+            console.error(err)
+        });
+
+		/* preparing data to be written into `img.txt` file as soon as data is listened */
+        socket.on('data', function(data) {
+            if (Ndr < Ndt) {
+                for (k = 0; k < data.length; k++) {
+                    Buff[Ndr + k] = data[k];
+                };
+                Ndr = Ndr + data.length;
             };
-            Ndr = Ndr + data.length;
-        };
-        if(Ndr == Ndt){ writingFile();};
-
-      }); //  socket.on data end
-
-      function writingFile(){
-        grille = new Array();
-        for(k = 0; k < img ; k++){
-            for(i = 0; i < nbPix; i++){
-                grille[i + k * nbPixImg] = new Array();
-                fs.appendFile('./public/img.txt', '\n');
-                    for(j = 0 ; j < lin; j++){
-                        grille[i + k * nbPixImg][j]= Buff[k * nbPixImg + i + j * nbPix];
-                        if(!isNaN(grille[i + k * nbPixImg][j])){
-                            fs.appendFile('./public/img.txt', grille[i + k * nbPixImg][j] + " ");
-                        };
-                      };
+            if (Ndr == Ndt) {
+                writingFile();
             };
-            fs.appendFile('./public/img.txt', '\n');
+        });
+        //  socket.on data end
+
+        socket.on('end', function(data) {
+            console.log('CONN: disconnected');
+            socket.end();
+        });
+		
+  	  	/* 
+		Writing ultrasound data requested in `img.txt` file. In a preceding time, header has been added at the top of the file. 
+		The header consists in all the ulatrasound params requested
+		*/
+        function writingFile() {
+            var wstream = fs.createWriteStream(path.join(__dirname, "../public/img.txt"), {
+                flags: 'a'
+            });
+
+            for (k = 0; k < img; k++) {
+                for (i = 0; i < nbPix; i++) {
+                    wstream.write("\n");
+                    for (j = 0; j < lin; j++) {
+                        wstream.write(Buff[i + k * nbPixImg + j * nbPix] + " ");
+                    }
+                };
+                wstream.write("\n");
+            };
+            wstream.end();
         };
-      };
-
-
-      // Remove the client from the list when it leaves
-     /* socket.on('end', function () {
-        clients.splice(clients.indexOf(socket), 1);
-        console.log(socket.name + " left the Node Js Server.\n");
-      });
-      */
-  
+    }).listen(9000);
 
     app.post('/api/sendSettings', function(req, res) {
-
+		
         var settings = req.body;
         var dec = settings.decimation;
         var xo = settings.b_mesu;
@@ -62,52 +137,62 @@ net.createServer(function (socket) {
         var dr = settings.d_ramp;
         var er = settings.e_ramp;
         var an = settings.angle;
-        var lin = settings.nb_lin;
-        var img = settings.nb_img;   
+        lin = settings.nb_lin;
+        img = settings.nb_img;
+		
+		if(checkSanityData(settings))
+	        console.log("sane data");
+		else
+	        res.end();
+
         // stringed to see the input send in the console
         var dataString = dec + xo + xf + dr + er + an + lin + img;
-        console.log(dataString);              
-          
-        var decimation = String.fromCharCode(dec);
-        var b_mesu = String.fromCharCode(xo);
-        var e_mesu = String.fromCharCode(xf);
-        var d_ramp = String.fromCharCode(dr);
-        var e_ramp = String.fromCharCode(er);
-        var angle = String.fromCharCode(an);
-        var nb_lin= String.fromCharCode(lin);
-        var nb_img = String.fromCharCode(img);
+
+        var decimation = convertIntTo2BytesChar(dec);
+        var b_mesu = convertIntTo2BytesChar(xo);
+        var e_mesu = convertIntTo2BytesChar(xf);
+        var d_ramp = convertIntTo2BytesChar(dr);
+        var e_ramp = convertIntTo2BytesChar(er);
+        var angle = convertIntTo2BytesChar(an);
+        var nb_lin = convertIntTo2BytesChar(lin);
+        var nb_img = convertIntTo2BytesChar(img);
         // sending in ASCII
+
         var input = decimation + b_mesu + e_mesu + d_ramp + e_ramp + angle + nb_lin + nb_img;
-     
-        var calculPix = (((2*(xf-xo)*125)/1.48)/dec);
+
+        var calculPix = (((2 * (xf - xo) * 125) / 1.48) / dec);
         nbPix = Math.floor(calculPix);
-        if(nbPix > 16384){ nbPix = 16384};
-        if(img <2){img =1};
-        nbPixImg = nbPix*lin;
+        if (nbPix > 16384) {
+            nbPix = 16384
+        };
+        if (img < 2) {
+            img = 1
+        };
+        nbPixImg = nbPix * lin;
         Ndr = 0;
         Ndt = nbPix * lin * img;
         Buff = new Array([Ndt]);
-    
-          // creation of the img.txt file 
-          fs.writeFile("./public/img.txt", "", function(err){
-              if(err){console.log(err)};
-                console.log("the file was saved");
-          });
-          // writing header with settings
-          fs.appendFile("./public/img.txt", "decimation = " + dec+ "/"
-                          + " xo = "+ xo + "/"
-                          + " xf = "+ xf + "/"
-                          + " dramp = "+ dr + "/"
-                          + " eramp = "+ er + "/"
-                          + " angle = "+ an + "/"
-                          + " nb lign = "+ lin + "/"
-                          + " nb img = "+ img);
-          // sending the input to the socket
-          socket.write(input);
-          res.end();
-      }); //  app.post(..sendSettings) end
-    }).listen(9000);
-      
-      console.log("lets go port 9000");
 
+        /* creation of the img.txt file */
+        var wstream = fs.createWriteStream(path.join(__dirname, "../public/img.txt"));
+
+         /* the img.txt file is dumped with with all the requested params */
+		wstream.write("decimation = " + dec + "/" +
+            " xo = " + xo + "/" +
+            " xf = " + xf + "/" +
+            " dramp = " + dr + "/" +
+            " eramp = " + er + "/" +
+            " angle = " + an + "/" +
+            " nb lign = " + lin + "/" +
+            " nb img = " + img);
+
+
+        /* requested params are sent to the hardware */ 						  
+        if (clients[0]) {
+            clients[0].stream.write(input);
+        }
+        console.log("end writing header");
+        res.end();
+    });
+    console.log("lets go port 9000");
 };

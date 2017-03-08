@@ -19,7 +19,7 @@ $(document).ready(function(){
 
 	// HackerEarth API endpoints
 	var COMPILE_URL = "compile/"
-	var RUN_URL = "run/"
+	var RUN_URL = "/run"
 
 	//Language Boilerplate Codes
 	var langBoilerplate = {}
@@ -52,7 +52,7 @@ $(document).ready(function(){
 
 	// initial configuration of the editor
 	editor.setTheme("ace/theme/twilight");
-	editor.session.setMode("ace/mode/c_cpp");
+	editor.session.setMode("ace/mode/python");
 	editor.getSession().setTabSize(indentSpaces);
 	editorContent = editor.getValue();
 	editor.setFontSize(15);
@@ -194,267 +194,23 @@ $(document).ready(function(){
 	}
 
 	/**
-	 * function to send AJAX request to 'compile/' endpoint
-	 *
-	 */
-	function compileCode(){
-
-		// if a compile request is ongoing
-		if(request_ongoing)
-			return;
-
-		// hide previous compile/output results
-		$(".output-response-box").hide();
-
-		// Change button text when this method is called
-		$("#compile-code").html("Compiling..");
-
-		// disable buttons when this method is called
-		$("#compile-code").prop('disabled', true);
-		$("#run-code").prop('disabled', true);
-
-		// take recent content of the editor for compiling
-		updateContent();
-
-		var csrf_token = $(":input[name='csrfmiddlewaretoken']").val();
-
-		// if code_id present in url and updated compile URL
-		if(window.location.href.includes('code_id')) {
-			COMPILE_URL = '/../compile/';
-		}
-
-		var compile_data = {
-			source: editorContent,
-			lang: languageSelected,
-			csrfmiddlewaretoken: csrf_token
-		};
-
-		request_ongoing = true;
-
-		// AJAX request to Django for compiling code
-		$.ajax({
-			url: COMPILE_URL,
-			type: "POST",
-			data: compile_data,
-			dataType: "json",
-			timeout: 10000,
-			success: function(response){
-
-				request_ongoing = false;
-
-				// Change button text when this method is called
-				$("#compile-code").html("Compile it!");
-
-				// enable button when this method is called
-				$("#compile-code").prop('disabled', false);
-				$("#run-code").prop('disabled', false);
-
-				$("html, body").delay(500).animate({
-					scrollTop: $('#show-results').offset().top
-				}, 1000);
-
-				$(".output-response-box").show();
-				$(".run-status").hide();
-				$(".time-sec").hide();
-				$(".memory-kb").hide();
-
-				if(response.message == undefined){
-					if(response.compile_status == "OK"){
-						$(".output-io").hide();
-						$(".compile-status").children(".value").html("OK");
-					}
-					else{
-						$(".output-io").show();
-						$(".output-error-box").show();
-						$(".output-io-info").hide();
-						$(".compile-status").children(".value").html("--");
-						$(".error-key").html("Compile error");
-						$(".error-message").html(response.compile_status);
-					}
-				}
-				else{
-					$(".output-io").show();
-					$(".output-error-box").show();
-					$(".output-io-info").hide();
-					$(".compile-status").children(".value").html("--");
-					$(".error-key").html("Server error");
-					$(".error-message").html(response.message);
-				}
-			},
-			error: function(error){
-
-				request_ongoing = false;
-
-				// Change button text when this method is called
-				$("#compile-code").html("Compile it!");
-
-				// enable button when this method is called
-				$("#compile-code").prop('disabled', false);
-				$("#run-code").prop('disabled', false);
-
-				$("html, body").delay(500).animate({
-					scrollTop: $('#show-results').offset().top
-				}, 1000);
-
-				$(".output-response-box").show();
-				$(".run-status").hide();
-				$(".time-sec").hide();
-				$(".memory-kb").hide();
-
-				$(".output-io").show();
-				$(".output-error-box").show();
-				$(".output-io-info").hide();
-				$(".compile-status").children(".value").html("--");
-				$(".error-key").html("Server error");
-				$(".error-message").html("Server couldn't complete request. Please try again!");
-			}
-		});
-
-	}
-
-
-	/**
 	 * function to send AJAX request to 'run/' endpoint
 	 *
 	 */
 	function runCode(){
 
-		// if a run request is ongoing
-		if(request_ongoing)
-			return;
-
 		// hide previous compile/output results
 		$(".output-response-box").hide();
 
-		// Change button text when this method is called
-		$("#run-code").html("Running..");
-
-		// disable button when this method is called
-		$("#compile-code").prop('disabled', true);
-		$("#run-code").prop('disabled', true);
+                $("#run-code").html("Done!");
 
 		// take recent content of the editor for compiling
 		updateContent();
 
 		var csrf_token = $(":input[name='csrfmiddlewaretoken']").val();
 
-		// if code_id present in url and update run URL
-		if(window.location.href.includes('code_id')) {
-			RUN_URL = '/../run/';
-		}
 
-		var input_given = $("#custom-input").val();
-
-		request_ongoing = true;
-
-		if( $("#custom-input-checkbox").prop('checked') == true ){
-			var run_data = {
-				source: editorContent,
-				lang: languageSelected,
-				input: input_given,
-				csrfmiddlewaretoken: csrf_token
-			};
-			// AJAX request to Django for running code with input
-			$.ajax({
-				url: RUN_URL,
-				type: "POST",
-				data: run_data,
-				dataType: "json",
-				timeout: 10000,
-				success: function(response){
-					request_ongoing = false;
-
-					if(location.port == "")
-						$('#copy_code')[0].innerHTML = '<kbd>' + window.location.hostname + '/code_id=' + response.code_id + '/</kbd>';
-					else
-						$('#copy_code')[0].innerHTML = '<kbd>' + window.location.hostname + ':' +  location.port +'/code_id=' + response.code_id + '/</kbd>';
-
-					$('#copy_code').css({'display': 'initial'});
-
-					// Change button text when this method is called
-					$("#run-code").html("Hack(run) it!");
-
-					// enable button when this method is called
-					$("#compile-code").prop('disabled', false);
-					$("#run-code").prop('disabled', false);
-
-					$("html, body").delay(500).animate({
-						scrollTop: $('#show-results').offset().top
-					}, 1000);
-
-					$(".output-response-box").show();
-					$(".run-status").show();
-					$(".time-sec").show();
-					$(".memory-kb").show();
-
-					if(response.compile_status == "OK"){
-						if(response.run_status.status == "AC"){
-							$(".output-io").show();
-							$(".output-error-box").hide();
-							$(".output-io-info").show();
-							$(".compile-status").children(".value").html(response.compile_status);
-							$(".run-status").children(".value").html(response.run_status.status);
-							$(".time-sec").children(".value").html(response.run_status.time_used);
-							$(".memory-kb").children(".value").html(response.run_status.memory_used);
-							$(".output-o").html(response.run_status.output_html);
-							$(".output-i").html(input_given);
-						}
-						else{
-							$(".output-io").show();
-							$(".output-io-info").hide();
-							$(".output-error-box").show();
-							$(".compile-status").children(".value").html(response.compile_status);
-							$(".run-status").children(".value").html(response.run_status.status);
-							$(".time-sec").children(".value").html(response.run_status.time_used);
-							$(".memory-kb").children(".value").html(response.run_status.memory_used);
-							$(".error-key").html("Run-time error (stderr)");
-							$(".error-message").html(response.run_status.stderr);
-						}
-					}
-					else{
-						$(".output-io").show();
-						$(".output-io-info").hide();
-						$(".compile-status").children(".value").html("--");
-						$(".run-status").children(".value").html("CE");
-						$(".time-sec").children(".value").html("0.0");
-						$(".memory-kb").children(".value").html("0");
-						$(".error-key").html("Compile error");
-						$(".error-message").html(response.compile_status);
-					}
-				},
-				error: function(error){
-
-					request_ongoing = false;
-
-					// Change button text when this method is called
-					$("#run-code").html("Hack(run) it!");
-
-					// enable button when this method is called
-					$("#compile-code").prop('disabled', false);
-					$("#run-code").prop('disabled', false);
-
-					$("html, body").delay(500).animate({
-						scrollTop: $('#show-results').offset().top
-					}, 1000);
-
-					$(".output-response-box").show();
-					$(".run-status").show();
-					$(".time-sec").show();
-					$(".memory-kb").show();
-
-					$(".output-io").show();
-					$(".output-io-info").hide();
-					$(".compile-status").children(".value").html("--");
-					$(".run-status").children(".value").html("--");
-					$(".time-sec").children(".value").html("0.0");
-					$(".memory-kb").children(".value").html("0");
-					$(".error-key").html("Server error");
-					$(".error-message").html("Server couldn't complete request. Please try again!");
-				}
-			});
-		}
-		else{
-			var run_data = {
+		var run_data = {
 				source: editorContent,
 				lang: languageSelected,
 				csrfmiddlewaretoken: csrf_token
@@ -462,7 +218,7 @@ $(document).ready(function(){
 			// AJAX request to Django for running code without input\
 			var timeout_ms = 10000;
 			$.ajax({
-				url: RUN_URL,
+				url: '/run',
 				type: "POST",
 				data: run_data,
 				dataType: "json",
@@ -476,102 +232,20 @@ $(document).ready(function(){
 					$('#copy_code').css({'display': 'initial'});
 
 					request_ongoing = false;
-
-					// Change button text when this method is called
-					$("#run-code").html("Hack(run) it!");
-
-					// enable button when this method is called
-					$("#compile-code").prop('disabled', false);
-					$("#run-code").prop('disabled', false);
-
-					$("html, body").delay(500).animate({
-						scrollTop: $('#show-results').offset().top
-					}, 1000);
-
-					$(".output-response-box").show();
-					$(".run-status").show();
-					$(".time-sec").show();
-					$(".memory-kb").show();
-
-					if(response.compile_status == "OK"){
-						if(response.run_status.status == "AC"){
+                                        $("#run-code").html("Submit!");
+					if("OK" == "OK"){
+						if("AC"  == "AC"){
 							$(".output-io").show();
 							$(".output-error-box").hide();
 							$(".output-io-info").show();
 							$(".output-i-info").hide();
-							$(".compile-status").children(".value").html(response.compile_status);
-							$(".run-status").children(".value").html(response.run_status.status);
-							$(".time-sec").children(".value").html(response.run_status.time_used);
-							$(".memory-kb").children(".value").html(response.run_status.memory_used);
 							$(".output-o").html(response.run_status.output_html);
 						}
-						else{
-							$(".output-io").show();
-							$(".output-io-info").hide();
-							$(".output-error-box").show();
-							$(".compile-status").children(".value").html(response.compile_status);
-							$(".run-status").children(".value").html(response.run_status.status);
-							$(".time-sec").children(".value").html(response.run_status.time_used);
-							$(".memory-kb").children(".value").html(response.run_status.memory_used);
-
-							if (response.run_status.status == "TLE"){
-								// Timeout error
-								$(".error-key").html("Timeout error");
-								$(".error-message").html("Time limit exceeded.");
-							} else if(response.run_status.status == "MLE"){
-								// Memory Limit Exceeded
-								$(".error-key").html("Memory limit error");
-								$(".error-message").html("Memory limit exceeded");
-							}
-							else {
-								// General stack error
-								$(".error-key").html("Run-time error (stderr)");
-								$(".error-message").html(response.run_status.stderr);
-							}
-						}
 					}
-					else{
-						$(".output-io").show();
-						$(".output-io-info").hide();
-						$(".compile-status").children(".value").html("--");
-						$(".run-status").children(".value").html("CE");
-						$(".time-sec").children(".value").html("0.0");
-						$(".memory-kb").children(".value").html("0");
-						$(".error-key").html("Compile error");
-						$(".error-message").html(response.compile_status);
-					}
-				},
-				error: function(error){
 
-					request_ongoing = false;
-
-					// Change button text when this method is called
-					$("#run-code").html("Hack(run) it!");
-
-					// enable button when this method is called
-					$("#compile-code").prop('disabled', false);
-					$("#run-code").prop('disabled', false);
-
-					$("html, body").delay(500).animate({
-						scrollTop: $('#show-results').offset().top
-					}, 1000);
-
-					$(".output-response-box").show();
-					$(".run-status").show();
-					$(".time-sec").show();
-					$(".memory-kb").show();
-
-					$(".output-io").show();
-					$(".output-io-info").hide();
-					$(".compile-status").children(".value").html("--");
-					$(".run-status").children(".value").html("--");
-					$(".time-sec").children(".value").html("0.0");
-					$(".memory-kb").children(".value").html("0");
-					$(".error-key").html("Server error");
-					$(".error-message").html("Server couldn't complete request. Please try again!");
 				}
 			});
-		}
+
 
 	}
 
@@ -742,6 +416,7 @@ $(document).ready(function(){
 
 		runCode();
 
+
 	});
 
 	// check if input box is to be show
@@ -752,3 +427,4 @@ $(document).ready(function(){
 
 
 });
+
