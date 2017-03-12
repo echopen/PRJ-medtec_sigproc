@@ -88,74 +88,9 @@ class LeaderboardView(FormView):
         context['object']= self.model
         return context
 
-    def execute_upload(self,request):
-                import uuid
-                form = self.form_class(request.POST, request.FILES)
-
-                if  form.is_valid():
-                    #resp = self.handle_uploaded_file(request.FILES['file'])
-                    with open('uploaded_custom.py', 'wb+') as destination:
-                        for chunk in request.FILES['file'].chunks():
-                            destination.write(chunk)
-                        destination.close()
-
-                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='amqp://echopen1:echopen1@37.187.117.106/echopen1', timeout=3600)
-               
-                    resp = proxy.denoise(open('uploaded_custom.py', 'rb').read())
-
-                    self.uuid_index  = str(uuid.uuid4())
-
-                    model = Algorithm
-
-                    run_rank = model.objects.filter(rating__gt=int(resp['score'])).order_by('ranking')
-                    if len(run_rank) > 0:
-                        rankobj = run_rank.last()
-                        rank = rankobj.ranking + 1
-
-                    else:
-                        rank = 1
-                     
-                    run_rank_low = model.objects.filter(rating__lte=int(resp['score']))
-                    if len(run_rank_low) > 0 :
-                        for i in run_rank_low:
-                            i.ranking += 1
-                            i.save()
-
-                    else:
-                        pass
-                    
-                                  
-                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], source_code=source, cpu=18)
-                    b.save()
-                    job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
-                    
-                    resp = model.objects.all().order_by('ranking')
-                    values = resp.values('run_id')
-                    
-                    for ind, item  in enumerate(values) :
-                        if (item['run_id']) == self.uuid_index :
-                            paging =  divmod(ind, 5)[0]
-
-                    feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))
-                    feed.save()
-
-
-                    #request.user.profile.notify_job_done(b)      
-                    
-
-                    like = Activity(activity_type=Activity.RUN_PROCESSED, feed=feed.pk, user=request.user)
-                    like.save()
-
-                    user = request.user
-                    user.profile.notify_liked_bis(feed)
-                    
-
-                    return paging
-
 
     def post(self, request, *args, **kwargs):
         try:
-            paging = self.execute_upload(request)
             return HttpResponseRedirect('/leaderboard')
         except Exception as e:
             print(e)
@@ -166,15 +101,16 @@ class LeaderboardView(FormView):
             model = Algorithm
             
             try:
-                last_obj = model.objects.filter(name = request.user).order_by('-process_date').latest('process_date')
-                last_run_id = last_obj.run_id
-            
+                last_obj = model.objects.filter(username = request.user).order_by('-process_date').latest('process_date')
+                last_run_id = last_obj.id
+                print last_obj.id
+
+
             except Exception as e:
                 last_run_id = None
- 
-            #resp = model.objects.order_by('-rating')
-            resp = model.objects.order_by('ranking')
-            paginator = Paginator(resp, 5)
+                print(e.message)
+            resp = model.objects.order_by('rank')
+            paginator = Paginator(resp, 25)
             page = self.request.GET.get('page')
             try:
                 resp = paginator.page(page)

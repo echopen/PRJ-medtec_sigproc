@@ -63,7 +63,9 @@ $(document).ready(function(){
 		enableLiveAutocompletion: true
 	});
 	// include boilerplate code for selected default language
-	editor.setValue(langBoilerplate[languageSelected]);
+	//editor.setValue(langBoilerplate[languageSelected]);
+	editor.setValue(document.getElementById('code_content').value)
+
 
 	// create a simple selection status indicator
 	var StatusBar = ace.require("ace/ext/statusbar").StatusBar;

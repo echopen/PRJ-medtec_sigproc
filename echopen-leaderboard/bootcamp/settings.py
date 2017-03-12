@@ -34,14 +34,23 @@ CACHES = {
     }
 }
 
+#DATABASES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': 'demo.db',
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'demo.db',
-    }
-}
-
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'leaderboard',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }}
 
 
 ALLOWED_HOSTS = ['*']
@@ -56,7 +65,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.humanize',
-
     'bootcamp.activities',
     'bootcamp.articles',
     'bootcamp.authentication',

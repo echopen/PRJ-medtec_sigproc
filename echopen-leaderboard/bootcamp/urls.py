@@ -10,7 +10,7 @@ from bootcamp.authentication import views as bootcamp_auth_views
 from bootcamp.activities import views as activities_views
 from bootcamp.search import views as search_views
 from bootcamp.leaderboard.views import LeaderboardView
-from bootcamp.hackIDE.views import index, runCode
+from bootcamp.hackIDE.views import index, runCode, hackide
 
 urlpatterns = [
     url(r'^$', core_views.home, name='home'),
@@ -40,9 +40,9 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/$', core_views.profile, name='profile'),
     url(r'^i18n/', include('django.conf.urls.i18n', namespace='i18n')),
     url(r'^leaderboard$', LeaderboardView.as_view(), name='leaderboard'),
-    url(r'^hackIDE$', index, name='hackIDE'),
+    url(r'^/hackIDE/$', index, name='hackIDE'),
     url(r'^run$', runCode.as_view(), name='run'),
-    #url(r'(?P<code_id>\w{0,50})/$', savedCodeView, name='saved-code'),
+    url(r'^code/(?P<code_id>[^/]+)/$', hackide, name='code'),
 ]
 
 if settings.DEBUG:

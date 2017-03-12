@@ -29,19 +29,18 @@
       </tr>
     </thead>
       {% for r in object %}
-      {% if last_run == r.run_id %}
+      {% if last_run == r.id %}
       <tr class="bg-warning">
       {% else %}
       <tr>
       {% endif %}
-      <td width="10%"><a href="/{{r.name}}" class="btn btn-info" role="button">{{r.name}}</a></td>
-      <td width="10%">{{r.ranking}}</td>
-      <td width="10%">{{r.rating}}</td>
+      <td width="10%"><a href="/{{r.username}}" class="btn btn-info" role="button">{{r.username}}</a></td>
+      <td width="10%">{{r.rank}}</td>
+      <td width="10%">{{r.score}}</td>
       <td width="10%">{{r.time}}</td>
 
-      <td width="1%"><button class="btn btn-primary glyphicon  glyphicon-download"></button></td>
-      <td width="1%"><button class="btn btn-success glyphicon glyphicon-camera"></button></td>
-      <td width="1%"><button class="btn btn-warning glyphicon glyphicon-info-sign"></button></td>
+      <td width="1%"> <a href="/code/{{r.id}}/" class="btn btn-warning glyphicon glyphicon-info-sign" role="button"></a></td>
+
 
       </tr>
       {% endfor %}
