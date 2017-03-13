@@ -87,7 +87,7 @@ simply renders the index.html template
 """
 def index(request):
   # render the index.html
-  return render(request, 'hackIDE/index.html', {})
+  return render(request, 'hackIDE/index.html', {'source_code':'''def install_packages():"\n    import pip\n    pip.main(['install', 'my_package'])\n\n\ndef run(rawSignal,image_shape):\n    #your exec code here"'''})
 
 
 """
