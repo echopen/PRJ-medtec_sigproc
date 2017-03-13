@@ -80,16 +80,27 @@ def missing_argument_error():
   return JsonResponse(response, safe=False)
 
 
+
 """
 View catering to /ide/ URL,
 simply renders the index.html template
 """
 def index(request):
   # render the index.html
-  return render(request, 'hackIDE/index.html', {})
+  return render(request, 'hackIDE/index.html', {'source_code':'''def install_packages():"\n    import pip\n    pip.main(['install', 'my_package'])\n\n\ndef run(rawSignal,image_shape):\n    #your exec code here"'''})
 
 
+"""
+View catering to /ide/ URL,
+simply renders the index.html template
+"""
+def hackide(request, code_id=None):
+  # render the index.html
+  query = Algorithm.objects.filter(id=code_id)
+  for obj in query:
+      print(obj.source_code)
 
+  return render(request, 'hackIDE/index.html', {'source_code': obj.source_code})
 
 
 """
@@ -111,8 +122,7 @@ class runCode(FormView):
 	   render(request, 'hackIDE/index.html')
     
   
-  def post(self, request): 
-	  print('toto')
+  def post(self, request):
 	  if request.is_ajax():
 		    source = request.POST['source']
 		    # Handle Empty Source Case
@@ -125,41 +135,36 @@ class runCode(FormView):
                     proxy = callme.Proxy(server_id='fooserver2',amqp_host='localhost', timeout=3600)
                
                     resp = proxy.enveloppe_extract(source)
-                    if resp['score'] < 100 :
-                        button_type = 'btn-warning'
-                    else:
-                        button_type = 'btn-success'
-                    self.uuid_index  = str(uuid.uuid4())
 
                     model = Algorithm
 
-                    run_rank = model.objects.filter(rating__lt=int(resp['score'])).order_by('ranking')
+                    run_rank = model.objects.filter(score__lte=int(resp['score'])).order_by('rank')
                     if len(run_rank) > 0:
                         rankobj = run_rank.last()
-                        rank = rankobj.ranking + 1
+                        rank = rankobj.rank + 1
 
                     else:
                         rank = 1
                      
-                    run_rank_low = model.objects.filter(rating__gte=int(resp['score']))
+                    run_rank_low = model.objects.filter(score__gt=int(resp['score']))
                     if len(run_rank_low) > 0 :
                         for i in run_rank_low:
-                            i.ranking += 1
+                            i.rank += 1
                             i.save()
 
                     else:
                         pass
                     
                                   
-                    b = Algorithm(run_id= self.uuid_index, name=request.user.username, user=request.user, ranking = rank, rating=resp['score'], button = button_type, time= resp['duration'], source_code=source, cpu=18)
+                    b = Algorithm(username=request.user.username, user=request.user, rank = rank, score=resp['score'], time= resp['duration'], source_code=source, cpu=18)
                     b.save()
                     job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
                     
-                    resp = model.objects.all().order_by('ranking')
-                    values = resp.values('run_id')
+                    resp = model.objects.all().order_by('rank')
+                    values = resp.values('id')
                     
                     for ind, item  in enumerate(values) :
-                        if (item['run_id']) == self.uuid_index :
+                        if (item['id']) == b.id:
                             paging =  divmod(ind, 5)[0]
 
                     feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))

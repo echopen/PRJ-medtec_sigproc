@@ -31,6 +31,7 @@
 <body>
     <!-- Hidden input field containing CSRF token required for making AJAX calls to Django -->
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+    <input type="hidden" id='source_code' value="{{ source_code }}" />
     <input type="hidden" id='saved_code_content' value="{{ code_content }}" />
     <input type="hidden" id='saved_code_lang' value="{{ lang }}" />
     <input type="hidden" id='saved_code_input' value="{{ inp }}" />
@@ -47,11 +48,7 @@
                 <div id="editor-topbar">
                     <div class="lang-choose">
                         <select class="form-control" name="lang" id="lang">
-                            <option value="C">C (gcc 4.8.1)</option>
-                            <option value="PERL">Perl (perl 5.14.2)</option>
-                            <option value="PHP">PHP (php 5.3.10)</option>
                             <option value="PYTHON" selected>Python (python 2.7.3)</option>
-                            <option value="R">R (RScript 2.14.1)</option>
                         </select>
                     </div>
                     <!-- END of lang-choose -->
