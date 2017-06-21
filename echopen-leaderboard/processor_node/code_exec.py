@@ -1,7 +1,8 @@
 import ast
-import pip 
+import pip, time
 import numpy as np
 from PIL import Image
+import traceback
 
 
 def normImag(A):
@@ -45,14 +46,21 @@ def execute_enveloppe():
     print('max Err between pixels for Baseline method : ', maxErr)
 
 def execute_user_script():
+    import sys 
+    val_ret = {'duration':'0','score':'10000'}
     f = open("uploaded_custom.py", "r")
     data = f.read()
 
-    tree = ast.parse(data)
+    try:
+        tree = ast.parse(data)
+    except Exception as e:      
+        val_ret['error_msg'] = e.strerror
+        return val_ret
     # tree.body[0] contains FunctionDef for fun1, tree.body[1] for fun2
 
     str_func = ""
     run_func = ""
+
     for function in tree.body:
         if isinstance(function,ast.FunctionDef):
             # Just in case if there are loops in the definition
@@ -77,22 +85,33 @@ def execute_user_script():
 
     exec str_func
     exec run_func
-    import time
-    val_ret = {'duration':'0','score':'10000'}    
+
+    val_ret = {'duration':'0','score':'10000', 'error_msg':'None'}
     im = Image.open("fantom.bmp").convert('L') # convert 'L' is to get a flat image, not RGB
     groundTruth = normImag(np.array(im))
     rawSignal = np.loadtxt("SinUs.csv.gz", delimiter=';')
-    #recon = submit_function.reconstructImage(rawSignal,groundTruth.shape)
-    #print('Score for Baseline method : ', score)
-    #print('max Err between pixels for Baseline method : ', maxErr)
     print 'install packages'
-    install_packages()
+
+    try:
+        install_packages()
+
+    except Exception as e:
+        val_ret['error_msg'] = 'ERROR in PACKAGES INSTALLATION :' + str(e)
+        print('ERROR in PACKAGES INSTALLATION' + str(e))
+        return val_ret
+
     print 'install done'
     start = time.clock()
     print 'execute user script'
-    recon = run(rawSignal, groundTruth.shape)
+
+    try:
+        recon = run(rawSignal, groundTruth.shape)
+    except Exception as e:
+        print('ERROR in CODE EXECUTION :' + str(e))
+        val_ret['error_msg'] = 'ERROR in CODE EXECUTION :' + str(e)
+        return val_ret
+
     end = time.clock()
-    print 'calculate score'
     [score,maxErr] = estimateScore(groundTruth, recon)
     val_ret["duration"] = (end - start)
     val_ret["score"] = score

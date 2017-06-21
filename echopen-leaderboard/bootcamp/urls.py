@@ -40,8 +40,8 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/$', core_views.profile, name='profile'),
     url(r'^i18n/', include('django.conf.urls.i18n', namespace='i18n')),
     url(r'^leaderboard$', LeaderboardView.as_view(), name='leaderboard'),
-    url(r'^/hackIDE/$', index, name='hackIDE'),
-    url(r'^run$', runCode.as_view(), name='run'),
+    url(r'^hackIDE$', index, name='hackIDE'),
+    url(r'^run$', runCode.as_view(), name='runCode'),
     url(r'^code/(?P<code_id>[^/]+)/$', hackide, name='code'),
 ]
 

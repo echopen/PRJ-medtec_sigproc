@@ -63,10 +63,13 @@ $(document).ready(function(){
 		enableLiveAutocompletion: true
 	});
 	// include boilerplate code for selected default language
-	//editor.setValue(langBoilerplate[languageSelected]);
-	editor.setValue(document.getElementById('code_content').value)
 
+	//if source_code:
+	editor.setValue(document.getElementById('source_code').value);
+	//else:
+	//editor.setValue(langBoilerplate[languageSelected])};
 
+    //editor.setValue(langBoilerplate[languageSelected]);
 	// create a simple selection status indicator
 	var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
 	var statusBar = new StatusBar(editor, document.getElementById("editor-statusbar"));
@@ -201,16 +204,18 @@ $(document).ready(function(){
 	 */
 	function runCode(){
 
+        if(request_ongoing)
+            return;
+        var csrf_token = $(":input[name='csrfmiddlewaretoken']").val();
 		// hide previous compile/output results
-		$(".output-response-box").hide();
 
-                $("#run-code").html("Done!");
-
+        $("#run-code").html("Doooooooooooondddd!");
 		// take recent content of the editor for compiling
 		updateContent();
 
 		var csrf_token = $(":input[name='csrfmiddlewaretoken']").val();
 
+        request_ongoing = true;
 
 		var run_data = {
 				source: editorContent,
@@ -218,38 +223,69 @@ $(document).ready(function(){
 				csrfmiddlewaretoken: csrf_token
 			};
 			// AJAX request to Django for running code without input\
-			var timeout_ms = 10000;
+			var timeout_ms = 1000000;
 			$.ajax({
-				url: '/run',
+				url: RUN_URL,
 				type: "POST",
 				data: run_data,
 				dataType: "json",
 				timeout: timeout_ms,
-				success: function(response){
-					if(location.port == "")
-						$('#copy_code')[0].innerHTML = '<kbd>' + window.location.hostname + '/code_id=' + response.code_id + '/</kbd>';
-					else
-						$('#copy_code')[0].innerHTML = '<kbd>' + window.location.hostname + ':' +  location.port +'/code_id=' + response.code_id + '/</kbd>';
 
+				success: function(response){
 					$('#copy_code').css({'display': 'initial'});
 
 					request_ongoing = false;
-                                        $("#run-code").html("Submit!");
-					if("OK" == "OK"){
-						if("AC"  == "AC"){
+                    //console.log(response.compile_status);
+					// Change button text when this method is called
+					$("#run-code").html("Hack() it!");
+
+					$("#run-code").prop('disabled', false);
+
+					if(response.run_status_status == "OK"){
+						    $(".output-response-box").show();
 							$(".output-io").show();
 							$(".output-error-box").hide();
 							$(".output-io-info").show();
 							$(".output-i-info").hide();
+							$(".compile-status").children(".value").html(response.compile_status);
+							$(".run-status").children(".value").html(response.run_status.status);
+							$(".time-sec").children(".value").html(response.run_status.time_used);
+							$(".memory-kb").children(".value").html(response.run_status.memory_used);
 							$(".output-o").html(response.run_status.output_html);
+						        }
+					else{
+                    $(".output-response-box").show();
+					request_ongoing = false;
+					$(".output-response-box").show();
+					$("#run-code").html("Submit");
+                    $(".output-io").show("ERROR");
+				    $(".output-io-info").show("error");
+					$(".compile-status").children(".value").html("connection error");
+					$(".run-status").children(".value").html("ERROR");
+					$(".time-sec").children(".value").html("0.0");
+					$(".memory-kb").children(".value").html("0");
+					$(".error-key").html("RUN ERROR");
+					$(".error-message").html(response.run_status_error);
 						}
 					}
-
+,
+				error: function(error){
+                    $(".output-response-box").show();
+					request_ongoing = false;
+					$(".output-response-box").show();
+					$("#run-code").html("Submit");
+                    $(".output-io").show("ERROR");
+				    $(".output-io-info").show("error");
+					$(".compile-status").children(".value").html("connection error");
+					$(".run-status").children(".value").html("ERROR");
+					$(".time-sec").children(".value").html("0.0");
+					$(".memory-kb").children(".value").html("0");
+					$(".error-key").html("RUN ERROR");
+					$(".error-message").html("CONNECTION ERROR TIMEOUT");
 				}
 			});
+		}
 
-
-	}
 
 
 	// when show-settings is clicked

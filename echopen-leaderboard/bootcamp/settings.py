@@ -10,41 +10,31 @@ PROJECT_DIR = Path(__file__).parent
 
 #SECRET_KEY = config('SECRET_KEY')
 
-SECRET_KEY = '+h*i@$52+w(_eetvzgnkjq!q0ajz1qpgs-y9%89x4w3nlct=m'
+SECRET_KEY = '6iype@&4cy@tru(4)y@mu2+zuqb0$5y4l058vxs!a&vy2adh$3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 TEMPLATE_DEBUG = DEBUG
-
-#BASICAUTH_USERNAME = 'HotelDieu00057'
-#BASICAUTH_PASSWORD = 'SignalProcessing-18-11-2016'
 
 
 #DATABASES = {
 #    'default': dj_database_url.config(default=config('DATABASE_URL'))
 #}
 
-DEBUG = True
+DEBUG = False
 
 
 # settings.py
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': '/var/tmp/django_cache',
     }
 }
 
-#DATABASES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': 'demo.db',
-#    }
-#}
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'leaderboard',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
@@ -53,7 +43,9 @@ DATABASES = {
     }}
 
 
-ALLOWED_HOSTS = ['*']
+
+
+ALLOWED_HOSTS = ['http://92.243.29.92', '.echopen.org', '*']
 
 # Application definition
 
@@ -139,4 +131,4 @@ ALLOWED_SIGNUP_DOMAINS = ['*']
 FILE_UPLOAD_TEMP_DIR = '/tmp/'
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-
+APPEND_SLASH = True

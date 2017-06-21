@@ -40,7 +40,7 @@ import requests, json, os
 import uuid
 
 # access config variable
-DEBUG = (os.environ.get('HACKIDE_DEBUG') != None)
+#DEBUG = (os.environ.get('HACKIDE_DEBUG') != None)
 # DEBUG = (os.environ.get('HACKIDE_DEBUG') or "").lower() == "true"
 #CLIENT_SECRET = os.environ['HE_CLIENT_SECRET'] if not DEBUG else ""
 
@@ -51,8 +51,8 @@ CLIENT_SECRET = '8eba4fb5086f2a7e838388a5812c0c2faa77d612'
 """
 Check if source given with the request is empty
 """
-def source_empty_check(source):
-  if source == "":
+def source_empty_check(source): 	
+   if source == "":
     response = {
       "message" : "Source can't be empty!",
     }
@@ -118,10 +118,11 @@ class runCode(FormView):
         return context
   
   
-  def get(self, request, *args, **kwargs):
-	   render(request, 'hackIDE/index.html')
+  def get(self, request, *args, **kwargs): 
+          render(request, 'hackIDE/index.html', {'source_code':'toto'})
     
   
+	  
   def post(self, request):
 	  if request.is_ajax():
 		    source = request.POST['source']
@@ -131,13 +132,13 @@ class runCode(FormView):
 		    lang = request.POST['lang']
 		    # Handle Invalid Language Case
 		    lang_valid_check(lang)
-
-                    proxy = callme.Proxy(server_id='fooserver2',amqp_host='localhost', timeout=3600)
-               
+                    proxy = callme.Proxy(server_id='fooserver',amqp_host='salamander.rmq.cloudamqp.com', amqp_vhost='spwlpmyp', amqp_user='spwlpmyp', amqp_password='_O3u6xA_26r_lGSBpfJY_fJn4Eu_9Sl3')
+                    
                     resp = proxy.enveloppe_extract(source)
 
-                    model = Algorithm
 
+                    model = Algorithm
+                    #source = source    + '\n' + resp['error_msg']
                     run_rank = model.objects.filter(score__lte=int(resp['score'])).order_by('rank')
                     if len(run_rank) > 0:
                         rankobj = run_rank.last()
@@ -159,7 +160,7 @@ class runCode(FormView):
                     b = Algorithm(username=request.user.username, user=request.user, rank = rank, score=resp['score'], time= resp['duration'], source_code=source, cpu=18)
                     b.save()
                     job_post = u'{0} has sent a job score: {1} rank: {2} :'.format(request.user.username,resp['score'], rank)
-                    
+                    cop_resp = resp
                     resp = model.objects.all().order_by('rank')
                     values = resp.values('id')
                     
@@ -167,21 +168,35 @@ class runCode(FormView):
                         if (item['id']) == b.id:
                             paging =  divmod(ind, 5)[0]
 
+
+                    print(cop_resp)
+                    if cop_resp['error_msg'] == 'None':
+                        r={'compile_status':'OK', 'run_status_status':'OK'}
+                    else:
+                        r = {'compile_status': 'OK', 'run_status_status': 'ERROR', 'run_status_error':cop_resp['error_msg']}
+
+
+
                     feed = Feed(user=request.user, post=job_post, job_link='/leaderboard?q=foo&flop=flip&page='+str(paging+1))
                     feed.save()
-
-
-                    #request.user.profile.notify_job_done(b)      
-                    
-
                     like = Activity(activity_type=Activity.RUN_PROCESSED, feed=feed.pk, user=request.user)
                     like.save()
 
                     user = request.user
                     user.profile.notify_liked_bis(feed)
 
-                    print 'Notified'
-		    return HttpResponse(render(request, 'hackIDE/index.html'))	
+                    import json
+                    #r['compile_status'] = 'OK'
+                    #r['run_status']['status'] = 'AC'
+                    #r['run_status']['time_used'] = '12'
+                    #r['run_status']['memory_used'] = '12'
+                    #r['run_status']['output_html'] = "dededed"
+                    #r['run_status']['stderr'] =  "toto"
+
+                    #r   = json.dumps(r)
+                    #return HttpResponse(r, content_type="application/json")
+                    return JsonResponse(r, safe=False)
+		    #return HttpResponse(render(request, 'hackIDE/index.html'))
 
 	  else:
 		print('error')  
